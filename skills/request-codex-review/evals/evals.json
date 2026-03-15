@@ -1,0 +1,77 @@
+{
+  "skill_name": "request-codex-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Request a codex review for PR #42 in owner/my-repo",
+      "expected_output": "Skill should trigger Codex review polling, detect Codex comments, and initiate the fix-and-review loop",
+      "files": [],
+      "assertions": [
+        {
+          "name": "pr_context_extracted",
+          "description": "PR #42, owner, and repo name are correctly identified"
+        },
+        {
+          "name": "polling_initiated",
+          "description": "Output mentions polling for Codex comments or running the polling script"
+        },
+        {
+          "name": "automation_workflow_described",
+          "description": "Output describes or initiates the 6-phase automation loop (Initialize, Extract, Apply, Request, Loop, Report)"
+        },
+        {
+          "name": "phase_breakdown_clear",
+          "description": "Output explains what each phase does and the expected action flow"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need codex to review PR 17 on my example-repo. Can you trigger the review loop?",
+      "expected_output": "Should extract owner from context or prompt, parse PR number, and start polling for Codex feedback",
+      "files": [],
+      "assertions": [
+        {
+          "name": "owner_inference",
+          "description": "Owner is correctly inferred from context or git remote when not explicitly provided"
+        },
+        {
+          "name": "repo_name_extracted",
+          "description": "Repository name 'example-repo' is correctly parsed from the prompt"
+        },
+        {
+          "name": "pr_number_parsed",
+          "description": "PR number 17 is correctly identified from the prompt"
+        },
+        {
+          "name": "polling_workflow_initiated",
+          "description": "Output describes or starts the polling workflow for PR #17"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Start a codex review for the current PR and apply any feedback automatically",
+      "expected_output": "Should handle ambiguous input (no explicit owner/repo), use git to infer details, and demonstrate the auto-fix workflow",
+      "files": [],
+      "assertions": [
+        {
+          "name": "git_context_used",
+          "description": "Output indicates attempting to infer PR details from git/GitHub context"
+        },
+        {
+          "name": "ambiguous_handling",
+          "description": "Output gracefully handles the ambiguous 'current PR' reference by explaining what context is needed"
+        },
+        {
+          "name": "autofix_workflow_explained",
+          "description": "Output describes the automatic fix application workflow (read code → apply fix → test → commit → push)"
+        },
+        {
+          "name": "error_handling_mentioned",
+          "description": "Output mentions how to handle edge cases like test failures or ambiguous feedback"
+        }
+      ]
+    }
+  ]
+}
