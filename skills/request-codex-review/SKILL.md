@@ -1,6 +1,6 @@
 ---
 name: request-codex-review
-description: Automate Codex code review on GitHub PRs with full fix-and-iterate loops. Use this whenever you need to request Codex review for a PR and have it automatically poll for feedback, apply fixes, commit changes, and iterate until completion. Mention this for requests like "request codex review for PR #36", "run codex review on this PR", "trigger codex review for jchen0824/runclawd-frontend#42", or "apply codex feedback automatically". The skill handles the complete loop—polling, detecting issues, reading and fixing code, running tests, committing, pushing, re-requesting review, and repeating until Codex gives "good to go" or the PR gets a thumbs-up.
+description: Automate Codex code review on GitHub PRs with full fix-and-iterate loops. Use this whenever you need to request Codex review for a PR and have it automatically poll for feedback, apply fixes, commit changes, and iterate until completion. Mention this for requests like "request codex review for PR #42", "run codex review on this PR", "trigger codex review for owner/my-repo#42", or "apply codex feedback automatically". The skill handles the complete loop—polling, detecting issues, reading and fixing code, running tests, committing, pushing, re-requesting review, and repeating until Codex gives "good to go" or the PR gets a thumbs-up.
 ---
 
 # Request Codex Review — Automated Loop
@@ -32,7 +32,7 @@ Before using this skill, ensure:
 - ✅ You're in the repository root directory
 - ✅ The PR branch is checked out and ready to modify
 - ✅ `CODEX_REVIEW_SCRIPT` env var is set to your Codex polling script path (e.g., `export CODEX_REVIEW_SCRIPT=~/.codex/skills/gh-codex-review-loop/scripts/check_codex_review_state.py`)
-- ✅ Project has test/lint commands available (`npm run test:unit`, `npm run lint`, etc.)
+- ✅ Project has test/lint commands available (`<your-test-command>`, `<your-lint-command>`, etc.)
 
 ## The Automated Workflow
 
@@ -240,7 +240,7 @@ Post a comment on the PR **in reply to the Codex feedback comment**:
 
 - [File]: src/worker/provision-processor.ts
 - [Change]: Wrapped applyBdReferralCredit in try/catch
-- [Verification]: npm run test:unit ✅ passed
+- [Verification]: <your-test-command> ✅ passed
 
 Ready for re-review. Please review again.
 ```
