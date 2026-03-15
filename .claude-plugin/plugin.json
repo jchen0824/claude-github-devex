@@ -1,0 +1,7 @@
+{
+  "name": "github-devex",
+  "description": "GitHub developer experience tools: automated Codex code review loops with full fix-and-iterate workflows",
+  "author": {
+    "name": "jchen0824"
+  }
+}
