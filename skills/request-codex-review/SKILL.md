@@ -65,12 +65,14 @@ Before using this skill, ensure:
 **Claude's role**:
 1. Parse the JSON output from the polling script
 2. Extract `new_comments` array from the response
-3. For each comment:
-   - Read `body` (the Codex feedback text)
-   - Extract **file path** (mentioned in comment or inferred from context)
-   - Extract **line number(s)** (mentioned in comment)
-   - Summarize the **issue** (what Codex flagged)
-   - Identify the **suggested fix** (explicit or implied in comment)
+3. For each comment, record:
+   - `id` — needed to reply directly to this comment thread
+   - `source` — `"review_comment"` (line-level) or `"issue_comment"` (top-level)
+   - `body` (the Codex feedback text)
+   - **file path** (mentioned in comment or inferred from context)
+   - **line number(s)** (mentioned in comment)
+   - **issue summary** (what Codex flagged)
+   - **suggested fix** (explicit or implied in comment)
 
 **Example Codex comment**:
 ```
@@ -227,34 +229,51 @@ fix(provision): guard BD credit errors from failing provisioning
 Addresses Codex review feedback on src/worker/provision-processor.ts:295-310
 ```
 
-#### Step 3f: Push Changes
+#### Step 3f: Reply to This Comment's Thread
+
+Immediately after committing, reply **directly to this specific Codex comment thread** — before moving to the next comment. Use the comment's `id` and `source` from Phase 2:
+
+**If `source == "review_comment"`** (line-level):
+```bash
+gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id}/replies \
+  --method POST \
+  --field body="@codex I've applied the fix you suggested:
+
+- [File]: <file>
+- [Change]: <description of fix>
+- [Verification]: <your-test-command> ✅ passed"
+```
+
+**If `source == "issue_comment"`** (top-level — no thread reply API):
+```bash
+gh api repos/{owner}/{repo}/issues/{pr}/comments \
+  --method POST \
+  --field body="@codex I've applied the fix you suggested (in reply to your comment <comment_url>):
+
+- [File]: <file>
+- [Change]: <description of fix>
+- [Verification]: <your-test-command> ✅ passed"
+```
+
+### Phase 3 Loop
+
+When there are **multiple Codex comments in the same round**, repeat steps 3a–3f **for each comment individually** — apply fix, verify, commit, then reply to that specific comment's thread before moving to the next.
+
+After **all comments** are processed, push all commits at once:
+
 ```bash
 git push
 ```
 
-#### Step 3g: Reply to Codex Comment
-Post a comment on the PR **in reply to the Codex feedback comment**:
-```
-@codex I've applied the fix you suggested:
-
-- [File]: src/worker/provision-processor.ts
-- [Change]: Wrapped applyBdReferralCredit in try/catch
-- [Verification]: <your-test-command> ✅ passed
-
-Ready for re-review. Please review again.
-```
-
-### Phase 3 Loop
-If there are **multiple Codex comments in the same feedback round**, apply **all fixes** before requesting re-review (step 3g happens once after all fixes are applied).
-
 ### Phase 4: Request Another Review
 
-After all fixes for this round are committed and pushed, post a fresh PR comment:
-```
-@codex, please review again.
+Since each Codex comment already has an individual reply (Step 3f), post a single top-level PR comment to trigger the next review pass:
 
-I've addressed all feedback from the previous review pass. Please perform
-another code quality pass on the updated code.
+```bash
+gh pr comment {pr} --repo {owner}/{repo} --body "@codex, please review again.
+
+I've addressed all feedback from this review pass. Please perform
+another code quality pass on the updated code."
 ```
 
 This asks Codex to perform another full review.
@@ -364,20 +383,23 @@ Request codex review for PR #42 in owner/my-repo
    - Comment 1: "Missing error handling in `processPayment` (line 87)"
    - Comment 2: "Potential race condition in `updateBalance` (line 134)"
 
-3. **Apply fix #1** (Phase 3)
+3. **Apply fix #1** (Phase 3 — Comment 1)
    - Reads `src/payments/processor.ts:87`
    - Wraps function in try/catch with proper error recovery
    - Tests pass ✅
    - Commits: `fix: guard processPayment errors from propagating`
+   - Replies directly to Comment 1's thread: "Applied try/catch, tests pass"
 
-4. **Apply fix #2** (Phase 3)
+4. **Apply fix #2** (Phase 3 — Comment 2)
    - Reads `src/balances/updater.ts:134`
    - Adds serializable transaction with advisory lock
    - Tests pass ✅
    - Commits: `fix: serialize balance updates to prevent race condition`
+   - Replies directly to Comment 2's thread: "Added advisory lock, tests pass"
+   - Pushes all commits
 
 5. **Request re-review** (Phase 4)
-   - Posts: `@codex, please review again.`
+   - Posts top-level: `@codex, please review again.`
 
 6. **Wait & poll** (Phase 5)
    - Waits 3 minutes

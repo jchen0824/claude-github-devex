@@ -92,16 +92,28 @@ Push your changes to the PR branch:
 git push
 ```
 
-## Step 6: Request Another Review
+## Step 6: Reply to the Codex Comment
 
-Comment on the PR to ask Codex to review again:
+Always reply **directly to the Codex comment thread** using the comment's `id` and `source`:
 
+**If `source == "review_comment"`** (line-level):
+```bash
+gh api repos/{owner}/{repo}/pulls/{pr}/comments/{codex_comment_id}/replies \
+  --method POST \
+  --field body="@codex, please review again.
+
+I've applied the fix for the feedback on <file>.
+<Description of change>, verified with <your-test-command>. Ready for re-review."
 ```
-@codex, please review again.
 
-I've applied fixes for the feedback on src/worker/provision-processor.ts.
-Added try-catch error handling in applyBdReferralCredit and verified
-with <your-test-command>. Ready for re-review.
+**If `source == "issue_comment"`** (top-level):
+```bash
+gh api repos/{owner}/{repo}/issues/{pr}/comments \
+  --method POST \
+  --field body="@codex, please review again.
+
+I've applied the fix for the feedback on <file>.
+<Description of change>, verified with <your-test-command>. Ready for re-review."
 ```
 
 ## Multiple Issues in One Comment
