@@ -59,6 +59,10 @@ Run the project's verification commands to ensure your fix doesn't break anythin
 # Run your project's linter (detect from package.json, or ask user)
 # Examples: npm run lint, flake8, golangci-lint run
 <your-lint-command>
+
+# Run your project's build (if applicable — detect from package.json or ask user)
+# Examples: npm run build, cargo build, go build ./...
+<your-build-command>
 ```
 
 All of these should pass. If not, adjust your fix.
