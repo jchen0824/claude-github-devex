@@ -41,14 +41,10 @@ Automate Codex code review on GitHub PRs with full fix-and-iterate loops.
 Before using this skill:
 
 1. **GitHub CLI** — authenticated: `gh auth status`
-2. **Codex polling script** — install and set env var:
-   ```bash
-   export CODEX_REVIEW_SCRIPT=~/.codex/skills/gh-codex-review-loop/scripts/check_codex_review_state.py
-   ```
-3. **In repository root** with PR branch checked out
-4. **Test/lint commands** — auto-detected from `package.json` or prompted
+2. **In repository root** with PR branch checked out
+3. **Test/lint commands** — auto-detected from `package.json` or prompted
 
-See `skills/request-codex-review/references/codex-integration.md` for full setup instructions.
+The Codex polling script is bundled with the plugin — no separate installation needed.
 
 ## License
 

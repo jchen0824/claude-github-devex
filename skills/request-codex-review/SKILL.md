@@ -31,7 +31,6 @@ Before using this skill, ensure:
 - ✅ GitHub CLI (`gh`) is authenticated: `gh auth status`
 - ✅ You're in the repository root directory
 - ✅ The PR branch is checked out and ready to modify
-- ✅ `CODEX_REVIEW_SCRIPT` env var is set to your Codex polling script path (e.g., `export CODEX_REVIEW_SCRIPT=~/.codex/skills/gh-codex-review-loop/scripts/check_codex_review_state.py`)
 - ✅ Project has test/lint commands available (`<your-test-command>`, `<your-lint-command>`, etc.)
 
 ## The Automated Workflow
@@ -400,6 +399,6 @@ Before requesting Codex review, verify:
 - [ ] No uncommitted changes: `git status`
 - [ ] Tests pass locally: `<your-test-command>`
 - [ ] Linting passes locally: `<your-lint-command>`
-- [ ] `CODEX_REVIEW_SCRIPT` is set and valid: `echo $CODEX_REVIEW_SCRIPT && test -f "$CODEX_REVIEW_SCRIPT" && echo "Found ✓"`
+- [ ] Plugin installed (polling script bundled): `find ~/.claude/plugins -name "check_codex_review_state.py" | head -1`
 
 If any fail, fix them first before requesting Codex review.

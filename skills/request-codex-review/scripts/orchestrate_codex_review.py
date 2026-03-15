@@ -9,7 +9,6 @@ This script:
 """
 
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -27,25 +26,13 @@ def run_codex_poll(owner: str, repo: str, pr: int, state_file: str, once: bool =
         "raw_output": str
     }
     """
-    codex_script_path = os.environ.get("CODEX_REVIEW_SCRIPT")
-    if not codex_script_path:
-        return {
-            "status": "error",
-            "exit_code": -1,
-            "new_comments": [],
-            "raw_output": (
-                "Error: CODEX_REVIEW_SCRIPT is not set. "
-                "Set it to the path of your Codex polling script, e.g.: "
-                "export CODEX_REVIEW_SCRIPT=~/.codex/skills/gh-codex-review-loop/scripts/check_codex_review_state.py"
-            )
-        }
-    codex_script = Path(codex_script_path)
+    codex_script = Path(__file__).parent / "check_codex_review_state.py"
     if not codex_script.exists():
         return {
             "status": "error",
             "exit_code": -1,
             "new_comments": [],
-            "raw_output": f"Error: Codex script not found at {codex_script}. Check your CODEX_REVIEW_SCRIPT env var."
+            "raw_output": f"Error: Bundled script not found at {codex_script}. Plugin may be incomplete."
         }
 
     cmd = [

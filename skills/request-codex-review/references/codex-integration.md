@@ -1,18 +1,13 @@
 # Codex Integration Details
 
-## Codex Skill Setup
+## Bundled Polling Script
 
-This skill requires a Codex polling script installed separately. Set the path via env var:
-
-```bash
-export CODEX_REVIEW_SCRIPT=~/.codex/skills/gh-codex-review-loop/scripts/check_codex_review_state.py
+The `check_codex_review_state.py` polling script is bundled directly with this plugin at:
+```
+skills/request-codex-review/scripts/check_codex_review_state.py
 ```
 
-Add this to your shell profile (`.zshrc`, `.bashrc`, etc.) to make it permanent.
-
-Key files in your Codex skill directory:
-- `SKILL.md` — Codex review workflow documentation
-- `scripts/check_codex_review_state.py` — Polling and state management
+No external installation or env var required. The `orchestrate_codex_review.py` script locates it automatically via `Path(__file__).parent`.
 
 ## Polling Script Interface
 
@@ -112,7 +107,7 @@ Common scenarios:
 
 | Scenario | Action |
 |----------|--------|
-| Script not found | Check `CODEX_REVIEW_SCRIPT` env var is set and points to an existing file: `test -f "$CODEX_REVIEW_SCRIPT" && echo "OK"` |
+| Script not found | Plugin may be incomplete — reinstall: `/plugin install github-devex@jchen0824/claude-code-plugins` |
 | `gh` auth fails | Run `gh auth status` to verify login |
 | State file locked | Manually delete `.codex/codex-review-loop-state-pr<PR>.json` and restart |
 | Codex not responding | Wait — Codex may be slow. Loop will check every 3 minutes indefinitely |
