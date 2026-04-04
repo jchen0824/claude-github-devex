@@ -1,0 +1,23 @@
+{
+  "skill_name": "codex-review-loop",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run the codex review loop against main until it approves my changes",
+      "expected_output": "Claude sets up ralph-loop with the adversarial review prompt, --base main, --completion-promise CODEX_REVIEW_APPROVED, and --max-iterations. The loop invokes superpowers, runs codex adversarial-review --wait --base main, fixes findings, commits, and repeats until approval.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I need to iterate on code quality for my feature branch, review against develop until codex signs off",
+      "expected_output": "Claude adapts the loop to use --base develop instead of --base main. Otherwise same workflow: ralph-loop drives iterations, codex adversarial-review runs each round, fixes are applied and committed until approval.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Run an adversarial review loop focusing on error handling and concurrency, keep going until codex approves",
+      "expected_output": "Claude sets up the ralph-loop and passes focus text ('error handling and concurrency') to the codex adversarial-review command. The review is scoped to those concerns while still using the full loop workflow.",
+      "files": []
+    }
+  ]
+}
