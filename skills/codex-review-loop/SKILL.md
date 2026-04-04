@@ -119,7 +119,7 @@ The `--max-iterations` flag on ralph-loop is a safety net, not a target. Default
 This is normal for the first 2-3 rounds — fixes can expose previously-hidden issues. If it persists beyond 5 rounds, check whether your fixes are introducing new problems or if there's a fundamental design issue worth discussing with the user.
 
 ### Review output is empty or malformed
-Check that the codex plugin is properly installed: the adversarial-review command should be available. If the review returns no findings and no explicit verdict, treat it as approval.
+Check that the codex plugin is properly installed: the adversarial-review command should be available. If the review returns no findings and no explicit verdict, do NOT treat it as approval — this likely indicates a plugin failure, parse error, or command issue. Retry the review. Only exit the loop when Codex explicitly returns `verdict: approve`.
 
 ### Tests fail after applying fixes
 Don't commit. Debug the test failure first. Your fix may have introduced a regression or the test may be asserting outdated behavior that your fix correctly changed (in which case, update the test).
