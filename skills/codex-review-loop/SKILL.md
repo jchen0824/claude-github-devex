@@ -1,13 +1,6 @@
 ---
 name: codex-review-loop
 description: "Automated local code quality loop using the Codex CLI plugin that iterates until Codex approves. Orchestrates ralph-loop to drive iterations, superpowers for disciplined skill usage, and codex adversarial-review (via local Codex CLI) for rigorous code review against a base branch. Requires the codex CLI and codex plugin to be installed locally. Use this skill whenever the user wants to run a review loop, iterate on code quality until approved, get Codex to sign off on their changes, or automate the fix-review-repeat cycle. Trigger on phrases like 'review loop', 'iterate until codex approves', 'code quality loop', 'keep fixing until approved', or 'adversarial review loop against main'."
-compatibility:
-  plugins:
-    - ralph-loop
-    - codex
-    - superpowers
-  tools:
-    - codex CLI (installed locally, provides the adversarial-review command)
 ---
 
 # Codex Review Loop
