@@ -36,9 +36,29 @@ Automate Codex code review on GitHub PRs with full fix-and-iterate loops.
 6. Requests another review
 7. Repeats until Codex says "good to go"
 
+### `codex-review-loop`
+
+Automated local code quality loop using the Codex CLI plugin that iterates until Codex approves — no GitHub PR required.
+
+**When to use:** Run a local review loop against a base branch, iterate on code quality until Codex signs off, or automate the fix-review-repeat cycle.
+
+**Example invocations:**
+- `"Run the codex review loop against main"`
+- `"Iterate until codex approves"`
+- `"Adversarial review loop against develop"`
+
+**What it does:**
+1. Orchestrates three plugins: **ralph-loop** (iteration driver), **codex adversarial-review** (local Codex CLI review), and **superpowers** (disciplined skill usage)
+2. Each iteration: runs an adversarial review against the base branch, parses the verdict
+3. If `needs-attention` — fixes every finding, verifies with tests, and commits
+4. If `approve` — exits the loop
+5. Repeats until Codex approves (typically 2-4 rounds)
+
+**Requires:** Codex CLI, ralph-loop plugin, and superpowers plugin installed locally.
+
 ### Prerequisites
 
-Before using this skill:
+Before using these skills:
 
 1. **GitHub CLI** — authenticated: `gh auth status`
 2. **In repository root** with PR branch checked out
