@@ -252,20 +252,52 @@ def cmd_inventory(args) -> int:
 # migrate
 # --------------------------------------------------------------------------
 
-def parse_bucket(spec: str, root: Path, store: str) -> Path:
-    """Accept 'account/org', or a bare account when the org is unambiguous."""
+def parse_bucket(spec: str, root: Path, store: str) -> Path | None:
+    """Accept 'account/org', or a bare account when the org is unambiguous.
+
+    Returns None when the account simply has no presence in this store, which is
+    normal — an account often has Claude Code sessions but no agent-mode ones.
+    Only genuine ambiguity (several orgs to choose from) is an error.
+    """
     parts = [p for p in spec.split("/") if p]
     if len(parts) == 2:
         return root / store / parts[0] / parts[1]
     if len(parts) == 1:
         account_dir = root / store / parts[0]
-        orgs = sorted(p for p in account_dir.iterdir() if p.is_dir()) if account_dir.is_dir() else []
+        orgs = sorted(p for p in account_dir.iterdir() if is_uuid_dir(p)) if account_dir.is_dir() else []
         if len(orgs) == 1:
             return orgs[0]
+        if not orgs:
+            return None
         raise SystemExit(
             f"'{spec}' matches {len(orgs)} orgs in {store}; specify account/org explicitly."
         )
     raise SystemExit(f"Could not parse bucket spec '{spec}'")
+
+
+def resolve_plan(args, root: Path) -> list[tuple[str, Path, Path]]:
+    """Work out every (store, source, target) up front.
+
+    Stores are migrated in sequence, so resolving lazily means an error on the
+    second store surfaces after the first has already been written — and with
+    --move, after its source records are gone. Failing during planning keeps a
+    bad spec from turning into a half-finished destructive migration.
+    """
+    plan = []
+    for store in STORES:
+        if args.stores and store not in args.stores:
+            continue
+        src = parse_bucket(args.source, root, store)
+        dst = parse_bucket(args.target, root, store)
+        if src is None or not src.is_dir():
+            continue
+        if dst is None:
+            # Target has no bucket in this store yet; derive it from the source's
+            # own org when the spec was a bare account.
+            parts = [p for p in args.target.split("/") if p]
+            dst = root / store / parts[0] / (parts[1] if len(parts) == 2 else src.name)
+        plan.append((store, src, dst))
+    return plan
 
 
 def make_backup(root: Path, dest: Path) -> Path:
@@ -303,14 +335,9 @@ def cmd_migrate(args) -> int:
         if target_name is None:
             target_name = account.get("displayName")
 
+    plan = resolve_plan(args, root)          # raises before anything is written
     results = []
-    for store in STORES:
-        if args.stores and store not in args.stores:
-            continue
-        src = parse_bucket(args.source, root, store)
-        dst = parse_bucket(args.target, root, store)
-        if not src.is_dir():
-            continue
+    for store, src, dst in plan:
         results.append(migrate_bucket(src, dst, store, args, target_email, target_name, root))
 
     if not results:
