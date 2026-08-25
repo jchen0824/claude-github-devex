@@ -469,50 +469,82 @@ def cmd_verify(args) -> int:
     root = resolve_root(args.root)
     problems, checks = [], []
 
+    final_root = Path(args.final_root).expanduser() if getattr(args, "final_root", None) else None
+
     for store in STORES:
         if args.stores and store not in args.stores:
             continue
         src = parse_bucket(args.source, root, store)
         dst = parse_bucket(args.target, root, store)
+        if src is None or dst is None or not src.is_dir():
+            continue
+
+        # A target that does not exist, or exists but is missing records, is the
+        # case verification most needs to catch: it is what a silently failed copy
+        # looks like. Comparing names against the source is the only way to know.
+        expected = [r.name for r in session_records(src)
+                    if (read_json(r) or {}).get("sessionType") != "scheduled"
+                    or args.include_scheduled]
+        present = {r.name for r in session_records(dst)} if dst.is_dir() else set()
+        absent = [n for n in expected if n not in present]
+        if absent:
+            problems.append(
+                f"{store}: {len(absent)} of {len(expected)} expected records are missing from the "
+                f"target (e.g. {absent[0]}) — the migration did not complete")
         if not dst.is_dir():
             continue
 
         records = session_records(dst)
-        checks.append(f"{store}: {len(records)} session records in target")
+        checks.append(f"{store}: {len(records)} session records in target, "
+                      f"{len(expected) - len(absent)} of {len(expected)} expected present")
 
-        bad = [r.name for r in records if read_json(r) is None]
+        # Read each record once. read_text() on a record that read_json already
+        # rejected raises, which would replace the diagnosis with a traceback in
+        # exactly the corrupt-record case this command exists to report.
+        parsed, bad = {}, []
+        for r in records:
+            data = read_json(r)
+            if data is None:
+                bad.append(r.name)
+            else:
+                parsed[r.name] = data
         if bad:
             problems.append(f"{store}: unparseable JSON in {', '.join(bad[:5])}")
 
         frag = f"{src.parent.name}/{src.name}"
-        stale = [r.name for r in records if frag in r.read_text()]
+        stale = [n for n, d in parsed.items() if frag in json.dumps(d)]
         if stale:
             problems.append(f"{store}: {len(stale)} records still reference the source bucket")
 
-        missing, foreign = [], []
-        for r in records:
-            cwd = (read_json(r) or {}).get("cwd")
-            if not isinstance(cwd, str):
+        # Stored paths must be rooted where the tree will actually live. That is
+        # --final-root when the store is staged elsewhere, and the scanned root
+        # otherwise; checking against the wrong one rejects a correct staged
+        # migration and accepts a broken one.
+        expected_root = final_root or root
+        bucket_frag = f"{dst.parent.name}/{dst.name}"
+        missing, wrong_root = [], []
+        for n, d in parsed.items():
+            cwd = d.get("cwd")
+            if not isinstance(cwd, str) or bucket_frag not in cwd:
                 continue
-            if cwd.startswith(str(root)):
-                if not Path(cwd).is_dir():
-                    missing.append(r.name)
-            elif f"{dst.parent.name}/{dst.name}" in cwd:
-                # Points at this bucket, but rooted in some other tree — the stale
-                # prefix left behind when a store is migrated somewhere it won't stay.
-                foreign.append(cwd)
+            if not cwd.startswith(str(expected_root)):
+                wrong_root.append(cwd)
+            elif final_root is None and not Path(cwd).is_dir():
+                missing.append(n)
         if missing:
             problems.append(f"{store}: {len(missing)} records point at a cwd that does not exist")
-        if foreign:
+        if wrong_root:
+            hint = (f"expected them under {expected_root}" if final_root
+                    else "re-run migrate with --final-root so they point where the tree will live")
             problems.append(
-                f"{store}: {len(foreign)} records store a path rooted outside this tree "
-                f"(e.g. {foreign[0]}) — re-run migrate with --final-root so they point where the tree will live")
+                f"{store}: {len(wrong_root)} records store a path rooted elsewhere "
+                f"(e.g. {wrong_root[0]}) — {hint}")
 
         if src.is_dir():
             checks.append(f"{store}: {len(session_records(src))} records still in source")
 
         nested = [p for p in dst.glob("local_*/.claude/.claude.json")
-                  if src.parent.name in p.read_text()]
+                  if src.parent.name in (p.read_text(errors="replace"))]
         if nested:
             checks.append(
                 f"{store}: {len(nested)} migrated workdirs keep the previous account "
@@ -524,6 +556,8 @@ def cmd_verify(args) -> int:
     if projects.is_dir() and not args.stores:
         dst = parse_bucket(args.target, root, "claude-code-sessions")
         have = miss = 0
+        if dst is None:
+            dst = root / "claude-code-sessions"
         for r in session_records(dst):
             cli = (read_json(r) or {}).get("cliSessionId")
             if not cli:
@@ -580,6 +614,10 @@ def main() -> int:
     p.add_argument("--source", required=True)
     p.add_argument("--target", required=True)
     p.add_argument("--stores", nargs="*", choices=STORES)
+    p.add_argument("--include-scheduled", action="store_true",
+                   help="expect scheduled-task records in the target too (match the migrate flag)")
+    p.add_argument("--final-root", help="the root the migration targeted, if the tree is staged "
+                                        "elsewhere — stored paths are validated against it")
     p.set_defaults(func=cmd_verify)
 
     p = sub.add_parser("backup", help="tar both session stores before migrating")

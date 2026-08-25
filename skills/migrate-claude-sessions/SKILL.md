@@ -84,7 +84,7 @@ The script handles four things that are easy to miss by hand:
 - **Paths are repointed.** An agent-mode `cwd` often points inside its *own* bucket. Migrate the record without rewriting it and the session silently keeps reading and writing files in the old account's tree. VM-style paths (`/sessions/<name>`) and ordinary paths like `~/Desktop` are left alone.
 - **Timestamps are preserved.** `cp -p` semantics throughout, so the app's session list stays in chronological order instead of showing everything as migrated-today.
 
-If the tree you're working in is *not* where it will finally live — a restored backup you'll copy into place afterwards — pass `--final-root "$HOME/Library/Application Support/Claude"`. Rewriting only the account/org fragment leaves stored paths rooted in the backup folder, and those sessions break the moment the tree lands somewhere real. `verify` flags this if you forget.
+If the tree you're working in is *not* where it will finally live — a restored backup you'll copy into place afterwards — pass `--final-root "$HOME/Library/Application Support/Claude"`. Rewriting only the account/org fragment leaves stored paths rooted in the backup folder, and those sessions break the moment the tree lands somewhere real. `verify` flags this if you forget — pass it the same `--final-root` so it validates against the destination rather than the staging area.
 
 ### 5. Verify
 
@@ -128,6 +128,6 @@ So the last thing you say is the restart, not a summary. Two details go with it:
 | `inventory` | Enumerate buckets with counts, date spans, owners. `--json` for machine-readable, `--all` to include empties. |
 | `backup` | Tar both stores. `--dest` to choose the path. |
 | `migrate` | Copy or move sessions. `--dry-run`, `--include-scheduled`, `--move`, `--stores`, `--target-email`, `--target-name`, `--final-root`. |
-| `verify` | Post-migration checks. Exits non-zero if anything failed. |
+| `verify` | Post-migration checks. Exits non-zero if anything failed. `--include-scheduled` and `--final-root` should match the flags you passed to `migrate`, since both change what a correct result looks like. |
 
 Bucket arguments accept `account/org`, or a bare `account` when that account has exactly one org.
