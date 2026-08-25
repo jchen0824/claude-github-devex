@@ -368,6 +368,7 @@ def migrate_bucket(src: Path, dst: Path, store: str, args,
     rewrite_root = bool(root_from and root_to and root_from != root_to)
 
     copied, skipped_existing, skipped_scheduled, dirs_copied, repointed, retagged = 0, 0, 0, 0, 0, 0
+    dir_collisions = 0
     copied_names: list[str] = []   # only these are safe to delete under --move
 
     if not args.dry_run:
@@ -413,14 +414,25 @@ def migrate_bucket(src: Path, dst: Path, store: str, args,
                 st = record.stat()
                 os.utime(out, (st.st_atime, st.st_mtime))
         copied += 1
-        copied_names.append(record.name)
 
-        # Agent-mode sessions own a sibling working directory.
+        # Agent-mode sessions own a sibling working directory. If the destination
+        # already has one (an interrupted earlier run, say) we must not copy over
+        # it — and we must not let --move delete the source either, because the
+        # source is then the only complete copy and the target session would be
+        # left pointing at unrelated state.
         wd = workdir_for(record)
-        if wd.is_dir() and not (dst / wd.name).exists():
-            if not args.dry_run:
-                shutil.copytree(wd, dst / wd.name, symlinks=True)
-            dirs_copied += 1
+        if wd.is_dir():
+            if (dst / wd.name).exists():
+                dir_collisions += 1
+                print(f"  workdir already exists for {record.name}; left the source in place",
+                      file=sys.stderr)
+            else:
+                if not args.dry_run:
+                    shutil.copytree(wd, dst / wd.name, symlinks=True)
+                dirs_copied += 1
+                copied_names.append(record.name)
+        else:
+            copied_names.append(record.name)
 
     if args.move and not args.dry_run:
         # Delete only what this run actually copied. A record skipped because the
@@ -440,6 +452,7 @@ def migrate_bucket(src: Path, dst: Path, store: str, args,
         "copied": copied, "workdirs_copied": dirs_copied,
         "identity_retagged": retagged, "paths_repointed": repointed,
         "skipped_existing": skipped_existing, "skipped_scheduled": skipped_scheduled,
+        "workdir_collisions": dir_collisions,
         "mode": "move" if args.move else "copy",
         "final_root": root_to if rewrite_root else None,
     }
