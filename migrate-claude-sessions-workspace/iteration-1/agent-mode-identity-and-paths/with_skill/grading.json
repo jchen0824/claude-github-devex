@@ -1,0 +1,48 @@
+{
+  "eval_name": "agent-mode-identity-and-paths",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "All 4 non-scheduled agent-mode session records are present in the target bucket",
+      "passed": true,
+      "evidence": "4 found: ['local_agent001-0000-4000-8000-000000000001.json', 'local_agent002-0000-4000-8000-000000000002.json', 'local_agent003-0000-4000-8000-000000000003.json', 'local_agent004-0000-4000-8000-000000000004.json']"
+    },
+    {
+      "text": "The Claude Code store was left alone (target code bucket still holds only its pre-existing record)",
+      "passed": true,
+      "evidence": "0 code records leaked into target (expected 0)"
+    },
+    {
+      "text": "None of the 8 recurring scheduled-task records were copied into the target bucket",
+      "passed": true,
+      "evidence": "0 scheduled records in target"
+    },
+    {
+      "text": "No migrated record still contains the previous owner's email address",
+      "passed": true,
+      "evidence": "0 records still contain previous.owner@example.com"
+    },
+    {
+      "text": "No migrated record's cwd still points into the source account's bucket",
+      "passed": true,
+      "evidence": "0 records still point at the source bucket"
+    },
+    {
+      "text": "Rewritten cwd values resolve to directories that exist (assumes the migration completes in this tree, not a stage-then-install flow)",
+      "passed": true,
+      "evidence": "2 rewritten into target, 0 do not resolve"
+    },
+    {
+      "text": "All 4 agent-mode working directories were copied",
+      "passed": true,
+      "evidence": "4 workdirs: ['local_agent001-0000-4000-8000-000000000001', 'local_agent002-0000-4000-8000-000000000002', 'local_agent003-0000-4000-8000-000000000003', 'local_agent004-0000-4000-8000-000000000004']"
+    },
+    {
+      "text": "The target bucket's own scheduled-tasks.json and rpm/ config were not overwritten",
+      "passed": true,
+      "evidence": "agent scheduled-tasks.json belongsTo='new'; rpm/manifest.json plugins=['keep-me']"
+    }
+  ],
+  "score": "8/8",
+  "pass_rate": 1.0
+}

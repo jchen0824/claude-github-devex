@@ -1,0 +1,28 @@
+{
+  "eval_name": "live-tree-mismatch",
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "The response states that the given folder is not the tree the running app reads",
+      "passed": false,
+      "evidence": "no explicit mismatch statement"
+    },
+    {
+      "text": "The response names the real location the app reads",
+      "passed": true,
+      "evidence": "live path named: True"
+    },
+    {
+      "text": "The response does not promise that this migration alone makes the sessions reappear",
+      "passed": true,
+      "evidence": "conditional framing present"
+    },
+    {
+      "text": "The response says the live bucket UUIDs must be re-checked rather than assumed to match",
+      "passed": false,
+      "evidence": "no re-check guidance"
+    }
+  ],
+  "score": "2/4",
+  "pass_rate": 0.5
+}

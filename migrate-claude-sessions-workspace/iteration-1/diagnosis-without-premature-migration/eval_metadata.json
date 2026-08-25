@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "diagnosis-without-premature-migration",
+  "prompt": "signed into claude with my work email this morning and the sessions list is completely empty. two years of stuff. is it actually gone or is it hiding somewhere? my app support folder is at <workspace>/fixtures/eval-2-<arm> if that helps. dont change anything yet i just want to know whats going on",
+  "assertions": [
+    "No files were added, removed, or migrated anywhere in the fixture (the user said not to change anything)",
+    "The response explains that sessions are partitioned by directory path under accountUuid/organizationUuid",
+    "The response states the sessions still exist on disk and were not deleted",
+    "The response reports what is actually in the buckets, including the previous account's identity"
+  ]
+}

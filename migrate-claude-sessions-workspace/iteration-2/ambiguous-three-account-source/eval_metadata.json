@@ -1,0 +1,14 @@
+{
+  "eval_id": 2,
+  "eval_name": "ambiguous-three-account-source",
+  "prompt": "there's a few different claude accounts that have been used on this mac over the years. i want the history from my old personal account moved onto my work account. the catch is a colleague borrowed this machine for a stretch and their stuff is on here too - do not touch anything of theirs. store is at FIXTURE_ROOT",
+  "assertions": [
+    "All 12 of the intended source account's Claude Code records reached the target",
+    "Not one record belonging to the other person was copied into the target",
+    "The other person's own bucket was left completely untouched",
+    "The skills-plugin directory was not treated as an account (nothing from it reached the target)",
+    "The response identifies the accounts by the email embedded in their records, naming both candidates",
+    "The response flags that two accounts share the same organization UUID, so the directory path alone cannot separate them",
+    "The target's pre-existing records survived"
+  ]
+}

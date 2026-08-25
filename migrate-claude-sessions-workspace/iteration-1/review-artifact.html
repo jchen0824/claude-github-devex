@@ -1,0 +1,573 @@
+<title>Two of Twenty-Four</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+
+<style>
+/* ── Light palette: complete, on bare :root ───────────────────────── */
+:root {
+  color-scheme: light;
+  --ground:   #f2f3f6;
+  --surface:  #fcfcfb;
+  --raised:   #ffffff;
+  --border:   #e0e2e8;
+  --border-strong: #c9ccd4;
+  --ink:      #0b0b0b;
+  --muted:    #52514e;
+  --faint:    #8a8a86;
+
+  --with:     #2a78d6;   /* categorical slot 1 — with skill   */
+  --base:     #eb6834;   /* categorical slot 2 — baseline     */
+  --with-wash:#2a78d61a;
+  --base-wash:#eb68341a;
+
+  --good:     #0ca30c;   /* status — fixed, never themed      */
+  --critical: #d03b3b;
+
+  --shadow: 0 1px 2px #0b0b0b0d, 0 8px 24px -12px #0b0b0b1f;
+
+  --step--1: 0.8125rem;
+  --step-0:  1rem;
+  --step-1:  1.1875rem;
+  --step-2:  1.5rem;
+  --step-3:  2.125rem;
+  --step-4:  3rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground:   #111113;
+    --surface:  #1a1a19;
+    --raised:   #212121;
+    --border:   #2f2f31;
+    --border-strong: #46464a;
+    --ink:      #ffffff;
+    --muted:    #c3c2b7;
+    --faint:    #8b8b84;
+    --with:     #3987e5;
+    --base:     #d95926;
+    --with-wash:#3987e526;
+    --base-wash:#d9592626;
+    --shadow: 0 1px 2px #00000059, 0 8px 24px -12px #00000080;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground:   #111113;
+  --surface:  #1a1a19;
+  --raised:   #212121;
+  --border:   #2f2f31;
+  --border-strong: #46464a;
+  --ink:      #ffffff;
+  --muted:    #c3c2b7;
+  --faint:    #8b8b84;
+  --with:     #3987e5;
+  --base:     #d95926;
+  --with-wash:#3987e526;
+  --base-wash:#d9592626;
+  --shadow: 0 1px 2px #00000059, 0 8px 24px -12px #00000080;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+  font-size: var(--step-0);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 74rem; margin: 0 auto; padding: clamp(1.5rem, 4vw, 4rem) clamp(1rem, 4vw, 3rem) 6rem; }
+
+h1, h2, h3, .ui { font-family: Archivo, "Helvetica Neue", Arial, sans-serif; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+.eyebrow {
+  font-family: Archivo, sans-serif;
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+/* ── Masthead ─────────────────────────────────────────────────────── */
+.masthead { display: flex; flex-direction: column; gap: 0.75rem; padding-bottom: 2rem; border-bottom: 2px solid var(--ink); }
+.masthead h1 { font-size: var(--step-3); font-weight: 700; letter-spacing: -0.022em; line-height: 1.1; }
+.masthead .sub { color: var(--muted); max-width: 60ch; font-size: var(--step-1); }
+.meta-row { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: var(--step--1); color: var(--muted); }
+.meta-row b { color: var(--ink); font-weight: 500; }
+
+section { margin-top: 3.5rem; }
+.section-head { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.section-head h2 { font-size: var(--step-2); font-weight: 600; letter-spacing: -0.015em; }
+.section-head p { margin: 0; color: var(--muted); font-size: var(--step--1); max-width: 52ch; }
+
+.prose { max-width: 64ch; color: var(--muted); }
+.prose p { margin: 0 0 1rem; }
+.prose strong { color: var(--ink); font-weight: 600; }
+.prose code, .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.875em; color: var(--ink); }
+
+/* ── Hero finding ─────────────────────────────────────────────────── */
+.finding {
+  margin-top: 2.5rem;
+  display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem); align-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 3px; padding: clamp(1.5rem, 4vw, 2.5rem); box-shadow: var(--shadow);
+}
+.hero-num {
+  font-family: Archivo, sans-serif; font-weight: 700;
+  font-size: clamp(3.5rem, 11vw, 6.5rem); line-height: 0.85;
+  letter-spacing: -0.045em; font-variant-numeric: tabular-nums; color: var(--ink);
+  display: flex; align-items: baseline; gap: 0.1em;
+}
+.hero-num .of { font-size: 0.36em; color: var(--faint); font-weight: 600; letter-spacing: -0.01em; }
+.hero-cap { font-family: Archivo, sans-serif; font-size: var(--step--1); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); margin-top: 0.9rem; }
+.finding .prose { max-width: 54ch; }
+.finding .prose p:last-child { margin-bottom: 0; }
+@media (max-width: 44rem) { .finding { grid-template-columns: 1fr; } }
+
+/* ── Stat strip ───────────────────────────────────────────────────── */
+.stats { margin-top: 1.25rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 2px; background: var(--border); border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
+.stat { background: var(--surface); padding: 1.15rem 1.25rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.stat .v { font-family: Archivo, sans-serif; font-size: var(--step-2); font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat .k { font-family: Archivo, sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.075em; text-transform: uppercase; color: var(--faint); }
+.stat .n { font-size: var(--step--1); color: var(--muted); font-family: "Source Serif 4", serif; }
+.v.win { color: var(--with); }
+.v.loss { color: var(--base); }
+
+/* ── Charts ───────────────────────────────────────────────────────── */
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem; }
+.chart {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 3px; padding: 1.4rem 1.5rem 1.5rem; box-shadow: var(--shadow);
+}
+.chart h3 { font-size: var(--step-0); font-weight: 600; letter-spacing: -0.005em; }
+.chart .unit { font-family: "JetBrains Mono", monospace; font-size: var(--step--1); color: var(--faint); margin-top: 0.15rem; }
+
+.legend { display: flex; gap: 1.25rem; margin: 1rem 0 1.5rem; font-family: Archivo, sans-serif; font-size: var(--step--1); font-weight: 500; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+.swatch { width: 11px; height: 11px; border-radius: 2px; flex: none; }
+.sw-with { background: var(--with); }
+.sw-base { background: var(--base); }
+
+.group { margin-bottom: 1.35rem; }
+.group:last-child { margin-bottom: 0; }
+.group-label { font-family: Archivo, sans-serif; font-size: var(--step--1); font-weight: 600; color: var(--ink); margin-bottom: 0.5rem; }
+.bar-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.75rem; margin-bottom: 2px; }
+.track { position: relative; height: 22px; background: transparent; }
+.bar {
+  height: 100%; border-radius: 0 4px 4px 0;
+  position: relative; cursor: default;
+  transition: filter 0.15s ease;
+}
+.bar:hover, .bar:focus-visible { filter: brightness(1.12); }
+.bar:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.b-with { background: var(--with); }
+.b-base { background: var(--base); }
+.bar-val { font-family: "JetBrains Mono", monospace; font-size: var(--step--1); font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.bar-val.lead { color: var(--ink); font-weight: 500; }
+.baseline-rule { height: 1px; background: var(--border-strong); margin-top: 0.5rem; }
+.axis-note { font-family: "JetBrains Mono", monospace; font-size: 0.7rem; color: var(--faint); margin-top: 0.4rem; }
+
+/* ── Assertion matrix ─────────────────────────────────────────────── */
+.matrix-tools { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.toggle {
+  font-family: Archivo, sans-serif; font-size: var(--step--1); font-weight: 600;
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border-strong); border-radius: 3px;
+  padding: 0.45rem 0.85rem; cursor: pointer; transition: background 0.15s ease;
+}
+.toggle:hover { background: var(--raised); }
+.toggle[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.toggle:focus-visible { outline: 2px solid var(--with); outline-offset: 2px; }
+.tools-note { font-size: var(--step--1); color: var(--faint); }
+
+.matrix-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); box-shadow: var(--shadow); }
+table { border-collapse: collapse; width: 100%; min-width: 42rem; }
+caption { text-align: left; padding: 1rem 1.25rem 0; font-size: var(--step--1); color: var(--faint); font-family: Archivo, sans-serif; }
+thead th {
+  font-family: Archivo, sans-serif; font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.085em; text-transform: uppercase; color: var(--faint);
+  text-align: left; padding: 1rem 0.9rem 0.6rem; border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
+}
+thead th.num { text-align: center; }
+tbody td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); vertical-align: top; font-size: var(--step--1); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr.eval-head td {
+  background: var(--raised); font-family: Archivo, sans-serif; font-weight: 600;
+  font-size: var(--step--1); letter-spacing: -0.005em; color: var(--ink);
+  border-bottom: 1px solid var(--border-strong);
+}
+tbody tr.eval-head .tag { font-family: "JetBrains Mono", monospace; font-weight: 400; color: var(--faint); margin-left: 0.5rem; font-size: 0.75rem; }
+td.assert { color: var(--ink); max-width: 40rem; }
+td.num { text-align: center; width: 6.5rem; }
+
+/* Non-discriminating rows recede — the page's whole argument, made visible. */
+tr.blind td.assert { color: var(--muted); }
+tr.blind { background: transparent; }
+tr.signal { background: var(--with-wash); }
+tr.signal td.assert { font-weight: 600; }
+
+.mark { font-family: Archivo, sans-serif; font-weight: 700; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.3rem; }
+.mark.pass { color: var(--good); }
+.mark.fail { color: var(--critical); }
+.mark .lbl { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+tr.blind .mark { opacity: 0.55; }
+.verdict-cell { font-family: "JetBrains Mono", monospace; font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+.verdict-cell.blind-v { color: var(--faint); }
+.verdict-cell.signal-v { color: var(--with); font-weight: 700; }
+
+.evidence { margin-top: 0.4rem; font-family: "JetBrains Mono", monospace; font-size: 0.72rem; line-height: 1.5; color: var(--faint); }
+
+/* ── Callouts ─────────────────────────────────────────────────────── */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1.25rem; }
+.card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--border-strong); border-radius: 3px; padding: 1.25rem 1.4rem; }
+.card.win { border-left-color: var(--with); }
+.card.loss { border-left-color: var(--base); }
+.card.flag { border-left-color: var(--critical); }
+.card h3 { font-size: var(--step-0); font-weight: 600; margin-bottom: 0.5rem; letter-spacing: -0.005em; }
+.card p { margin: 0; color: var(--muted); font-size: var(--step--1); }
+.card p + p { margin-top: 0.6rem; }
+
+ol.next { counter-reset: n; list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+ol.next li { counter-increment: n; display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start; }
+ol.next li::before {
+  content: counter(n, decimal-leading-zero);
+  font-family: "JetBrains Mono", monospace; font-size: var(--step--1); font-weight: 700;
+  color: var(--faint); padding-top: 0.15rem;
+}
+ol.next h3 { font-size: var(--step-0); font-weight: 600; margin-bottom: 0.25rem; }
+ol.next p { margin: 0; color: var(--muted); font-size: var(--step--1); max-width: 62ch; }
+
+footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-family: "JetBrains Mono", monospace; font-size: 0.72rem; color: var(--faint); display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; }
+
+/* ── Tooltip ──────────────────────────────────────────────────────── */
+#tip {
+  position: fixed; z-index: 50; pointer-events: none; opacity: 0;
+  transform: translate(-50%, -130%); transition: opacity 0.12s ease;
+  background: var(--ink); color: var(--ground);
+  font-family: "JetBrains Mono", monospace; font-size: 0.72rem; line-height: 1.5;
+  padding: 0.45rem 0.6rem; border-radius: 3px; white-space: nowrap; box-shadow: var(--shadow);
+}
+#tip.on { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Skill evaluation · iteration 1</div>
+    <h1>The evals mostly measured nothing</h1>
+    <p class="sub">Benchmark review of <span class="mono">migrate-claude-sessions</span> — a skill for moving Claude desktop session history between accounts — against an unaided baseline.</p>
+    <div class="meta-row">
+      <span>repo <b>jchen0824/claude-github-devex</b></span>
+      <span>runs <b>6</b> (3 evals × 2 arms)</span>
+      <span>executor <b>claude-opus-5</b></span>
+      <span>date <b>2026-08-25</b></span>
+    </div>
+  </header>
+
+  <div class="finding">
+    <div>
+      <div class="hero-num">2<span class="of">/24</span></div>
+      <div class="hero-cap">Assertions that discriminate</div>
+    </div>
+    <div class="prose">
+      <p>The headline number is not the pass rate. Of 24 assertions written across three test cases, <strong>22 produced identical results with and without the skill</strong> — they were satisfied by a capable model working unaided, so they carry no information about whether the skill helps.</p>
+      <p>Reporting this as “100% vs 92%” would be true and misleading. The two assertions that actually separated the arms are both in the full-migration case, and only one of them is clean evidence.</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="k">Pass rate · with skill</span>
+      <span class="v">24/24</span>
+      <span class="n">All three evals clean</span>
+    </div>
+    <div class="stat">
+      <span class="k">Pass rate · baseline</span>
+      <span class="v">22/24</span>
+      <span class="n">Both misses in eval 1</span>
+    </div>
+    <div class="stat">
+      <span class="k">Full migration time</span>
+      <span class="v win">−40%</span>
+      <span class="n">276s vs 462s — the real win</span>
+    </div>
+    <div class="stat">
+      <span class="k">Short-task overhead</span>
+      <span class="v loss">+21%</span>
+      <span class="n">Skill costs more on quick diagnosis</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Cost per test case</h2>
+      <p>Two measures, two charts — time and tokens have different scales and never share an axis.</p>
+    </div>
+
+    <div class="legend" role="note">
+      <span><i class="swatch sw-with"></i>With skill</span>
+      <span><i class="swatch sw-base"></i>Baseline (no skill)</span>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart">
+        <h3>Wall-clock time</h3>
+        <div class="unit">seconds · lower is better</div>
+        <div class="baseline-rule"></div>
+
+        <div class="group" style="margin-top:1rem">
+          <div class="group-label">1 · Full migration</div>
+          <div class="bar-row"><div class="track"><div class="bar b-with" style="width:59.7%" tabindex="0" data-tip="With skill · 276s · 186s faster"></div></div><span class="bar-val lead">276 s</span></div>
+          <div class="bar-row"><div class="track"><div class="bar b-base" style="width:100%" tabindex="0" data-tip="Baseline · 462s · slowest run"></div></div><span class="bar-val">462 s</span></div>
+        </div>
+
+        <div class="group">
+          <div class="group-label">2 · Diagnosis only</div>
+          <div class="bar-row"><div class="track"><div class="bar b-with" style="width:36.2%" tabindex="0" data-tip="With skill · 167s · 29s slower"></div></div><span class="bar-val">167 s</span></div>
+          <div class="bar-row"><div class="track"><div class="bar b-base" style="width:29.9%" tabindex="0" data-tip="Baseline · 138s · fastest run"></div></div><span class="bar-val lead">138 s</span></div>
+        </div>
+
+        <div class="group">
+          <div class="group-label">3 · Agent-mode only</div>
+          <div class="bar-row"><div class="track"><div class="bar b-with" style="width:55.6%" tabindex="0" data-tip="With skill · 257s"></div></div><span class="bar-val">257 s</span></div>
+          <div class="bar-row"><div class="track"><div class="bar b-base" style="width:53.1%" tabindex="0" data-tip="Baseline · 246s"></div></div><span class="bar-val lead">246 s</span></div>
+        </div>
+        <div class="axis-note">0 ──────────────────────────── 462 s</div>
+      </div>
+
+      <div class="chart">
+        <h3>Tokens consumed</h3>
+        <div class="unit">total tokens · lower is better</div>
+        <div class="baseline-rule"></div>
+
+        <div class="group" style="margin-top:1rem">
+          <div class="group-label">1 · Full migration</div>
+          <div class="bar-row"><div class="track"><div class="bar b-with" style="width:88.7%" tabindex="0" data-tip="With skill · 84,694 tokens · 11% fewer"></div></div><span class="bar-val lead">84.7k</span></div>
+          <div class="bar-row"><div class="track"><div class="bar b-base" style="width:100%" tabindex="0" data-tip="Baseline · 95,510 tokens"></div></div><span class="bar-val">95.5k</span></div>
+        </div>
+
+        <div class="group">
+          <div class="group-label">2 · Diagnosis only</div>
+          <div class="bar-row"><div class="track"><div class="bar b-with" style="width:69.2%" tabindex="0" data-tip="With skill · 66,113 tokens"></div></div><span class="bar-val lead">66.1k</span></div>
+          <div class="bar-row"><div class="track"><div class="bar b-base" style="width:70.7%" tabindex="0" data-tip="Baseline · 67,486 tokens"></div></div><span class="bar-val">67.5k</span></div>
+        </div>
+
+        <div class="group">
+          <div class="group-label">3 · Agent-mode only</div>
+          <div class="bar-row"><div class="track"><div class="bar b-with" style="width:93.4%" tabindex="0" data-tip="With skill · 89,179 tokens · 10% more"></div></div><span class="bar-val">89.2k</span></div>
+          <div class="bar-row"><div class="track"><div class="bar b-base" style="width:84.9%" tabindex="0" data-tip="Baseline · 81,099 tokens"></div></div><span class="bar-val lead">81.1k</span></div>
+        </div>
+        <div class="axis-note">0 ──────────────────────────── 95.5k</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Assertion matrix</h2>
+      <p>Rows are recessed where both arms agreed. Only the highlighted rows told us anything.</p>
+    </div>
+
+    <div class="matrix-tools">
+      <button class="toggle" id="filterBtn" type="button" aria-pressed="false">Show only discriminating rows</button>
+      <span class="tools-note" id="filterNote">Showing all 24 assertions</span>
+    </div>
+
+    <div class="matrix-scroll">
+      <table>
+        <caption>Each assertion was checked programmatically against the fixture's post-state, not by eyeballing output.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Assertion</th>
+            <th scope="col" class="num">With skill</th>
+            <th scope="col" class="num">Baseline</th>
+            <th scope="col">Verdict</th>
+          </tr>
+        </thead>
+        <tbody id="matrixBody">
+          <tr class="eval-head"><td colspan="4">Eval 1 — Full migration from a restored store<span class="tag">12 assertions · 2 discriminating</span></td></tr>
+
+          <tr class="blind"><td class="assert">All 12 Claude Code session records from the source bucket are present in the target bucket</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">The session record that already existed in the target bucket is still present (not overwritten)</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">All 4 non-scheduled agent-mode session records are present in the target bucket</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">None of the 8 recurring scheduled-task records were copied into the target bucket</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">No migrated record still contains the previous owner's email address</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">No migrated record's <span class="mono">cwd</span> still points into the source account's bucket</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+
+          <tr class="signal"><td class="assert">Rewritten <span class="mono">cwd</span> values resolve to directories that exist
+            <div class="evidence">with: 2 rewritten, 0 unresolved · baseline: 2 rewritten, 2 unresolved — but the baseline deliberately pointed them at the live install path for a planned stage-then-install step. Weak evidence; the assertion assumed the migration ends in the fixture.</div></td>
+            <td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark fail">✕</span></td><td class="verdict-cell signal-v">contested</td></tr>
+
+          <tr class="blind"><td class="assert">All 4 agent-mode working directories were copied</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">The target bucket's own <span class="mono">scheduled-tasks.json</span> and <span class="mono">rpm/</span> config were not overwritten</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">The source bucket still holds all its original records (copy, not move)</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">A backup was taken before any files were written</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+
+          <tr class="signal"><td class="assert">The final response tells the user to restart the Claude app
+            <div class="evidence">baseline: no restart instruction anywhere in the response. A byte-perfect migration that still leaves the session list empty — the one thing the user actually asked for, missed.</div></td>
+            <td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark fail">✕</span></td><td class="verdict-cell signal-v">clean signal</td></tr>
+
+          <tr class="eval-head"><td colspan="4">Eval 2 — Diagnosis without premature migration<span class="tag">4 assertions · 0 discriminating</span></td></tr>
+          <tr class="blind"><td class="assert">No files were added, removed, or migrated anywhere in the fixture</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">The response explains that sessions are partitioned by directory path under <span class="mono">accountUuid/organizationUuid</span></td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">The response states the sessions still exist on disk and were not deleted</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">The response reports what is actually in the buckets, including the previous account's identity</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+
+          <tr class="eval-head"><td colspan="4">Eval 3 — Agent-mode identity and paths<span class="tag">8 assertions · 0 discriminating</span></td></tr>
+          <tr class="blind"><td class="assert">All 4 non-scheduled agent-mode session records are present in the target bucket</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">The Claude Code store was left alone (no scope creep)</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">None of the 8 recurring scheduled-task records were copied into the target bucket</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">No migrated record still contains the previous owner's email address</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">No migrated record's <span class="mono">cwd</span> still points into the source account's bucket</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">Rewritten <span class="mono">cwd</span> values resolve to directories that exist</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">All 4 agent-mode working directories were copied</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+          <tr class="blind"><td class="assert">The target bucket's own <span class="mono">scheduled-tasks.json</span> and <span class="mono">rpm/</span> config were not overwritten</td><td class="num"><span class="mark pass">✓</span></td><td class="num"><span class="mark pass">✓</span></td><td class="verdict-cell blind-v">no signal</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>What the baseline got right</h2>
+      <p>The uncomfortable part of the result, and the reason the assertions came out blind.</p>
+    </div>
+    <div class="cards">
+      <div class="card loss">
+        <h3>It derived the mental model unaided</h3>
+        <p>Without the skill, the model worked out that sessions are partitioned by <span class="mono">&lt;store&gt;/&lt;accountUuid&gt;/&lt;orgUuid&gt;</span> and that the fix is a file copy — the skill's central insight — from reading the directory tree.</p>
+      </div>
+      <div class="card loss">
+        <h3>It found the same traps</h3>
+        <p>Name-colliding config files, embedded identity fields, and the self-referential <span class="mono">cwd</span> were all spotted independently in both baseline migration runs.</p>
+      </div>
+      <div class="card loss">
+        <h3>It caught a bug in its own tooling</h3>
+        <p>One baseline discovered that <span class="mono">rsync --files-from</span> disables recursion, so its working directories silently weren't copying. It rehearsed against a throwaway target, caught it, and fixed it.</p>
+      </div>
+      <div class="card win">
+        <h3>But it paid for it in time</h3>
+        <p>All that rediscovery cost 462 seconds against the skill's 276. The skill's value here is not unlocking impossible work — it is not re-deriving the same findings every run.</p>
+      </div>
+      <div class="card flag">
+        <h3>And it forgot the restart</h3>
+        <p>The single unambiguous miss. Every file landed correctly and the user would still have opened the app to an empty list.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Limits of this result</h2>
+    </div>
+    <div class="prose">
+      <p><strong>One run per cell.</strong> Six runs total, so no variance estimate and no flakiness claim is available. The per-eval spread reflects task difficulty, not run-to-run noise.</p>
+      <p><strong>The fixture is synthetic.</strong> A generated store with 12 Claude Code records, 4 real agent-mode sessions, 8 cron artifacts, and two deliberately self-referential paths. It reproduces the traps found in the real migration, but it is not a real installation.</p>
+      <p><strong>Baselines were unusually strong.</strong> A frontier model with filesystem access is close to the ceiling on this task. The skill should be judged on consistency and speed, not on unlocking capability it does not already have.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Changes for iteration 2</h2>
+      <p>Two to the skill, two to the evals — both surfaced by the runs themselves.</p>
+    </div>
+    <ol class="next">
+      <li>
+        <div>
+          <h3>Verify you are working on the live tree</h3>
+          <p>A with-skill run noticed the fixture was not the directory the running app reads. Migrate into a restored backup and the migration succeeds while the user's real session list stays empty. The skill should cross-check the signed-in account against the buckets it finds and say so when they do not match.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Make the restart step impossible to skip</h3>
+          <p>The only clean baseline failure. It belongs in the workflow as a terminal step, not a closing remark — including the warning that restarting ends the current session when run from inside the desktop app.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Write assertions that can fail</h3>
+          <p>Twenty-two blind assertions is an eval design problem, not a skill result. The next set needs cases where the naive approach breaks: ambiguous buckets where one org UUID appears under two accounts, non-UUID directories that a naive glob treats as accounts, and colliding record names.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Repair the contested assertion</h3>
+          <p>“Rewritten <span class="mono">cwd</span> values resolve” punished a defensible stage-then-install strategy. Split it: the invariant that matters is that no <span class="mono">cwd</span> points at the source bucket, which both arms satisfied.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>migrate-claude-sessions · iteration 1</span>
+    <span>6 runs · 24 assertions · 2 discriminating</span>
+    <span>graded programmatically against fixture post-state</span>
+  </footer>
+</div>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var tip = document.getElementById('tip');
+
+  function show(el) {
+    var text = el.getAttribute('data-tip');
+    if (!text) return;
+    tip.textContent = text;
+    var r = el.getBoundingClientRect();
+    tip.style.left = (r.left + r.width / 2) + 'px';
+    tip.style.top = r.top + 'px';
+    tip.classList.add('on');
+  }
+  function hide() { tip.classList.remove('on'); }
+
+  document.querySelectorAll('.bar[data-tip]').forEach(function (bar) {
+    bar.addEventListener('mouseenter', function () { show(bar); });
+    bar.addEventListener('mouseleave', hide);
+    bar.addEventListener('focus', function () { show(bar); });
+    bar.addEventListener('blur', hide);
+  });
+  window.addEventListener('scroll', hide, { passive: true });
+
+  var btn = document.getElementById('filterBtn');
+  var note = document.getElementById('filterNote');
+  var body = document.getElementById('matrixBody');
+
+  btn.addEventListener('click', function () {
+    var on = btn.getAttribute('aria-pressed') === 'true';
+    var next = !on;
+    btn.setAttribute('aria-pressed', String(next));
+    btn.textContent = next ? 'Show all rows' : 'Show only discriminating rows';
+    note.textContent = next
+      ? 'Showing the 2 assertions that separated the two arms'
+      : 'Showing all 24 assertions';
+    // Keep a group header whenever the group still has a visible row under it,
+    // so the surviving assertions never float free of the eval they belong to.
+    var rows = Array.prototype.slice.call(body.querySelectorAll('tr'));
+    var keep = new Set();
+    var header = null;
+    rows.forEach(function (tr) {
+      if (tr.classList.contains('eval-head')) { header = tr; return; }
+      if (tr.classList.contains('signal')) { keep.add(tr); if (header) keep.add(header); }
+    });
+    rows.forEach(function (tr) {
+      tr.style.display = (!next || keep.has(tr)) ? '' : 'none';
+    });
+  });
+})();
+</script>

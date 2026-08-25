@@ -1,0 +1,14 @@
+{
+  "eval_id": 3,
+  "eval_name": "agent-mode-identity-and-paths",
+  "prompt": "Following up on my account switch - I got my Claude Code sessions over but the agent mode / cowork ones still need doing. Store is at <workspace>/fixtures/eval-3-<arm>. Important thing is they can't still be labelled with my old personal email once they're moved, and I don't want them writing files back into the old account's folder. Skip the daily cron ones, they're just noise.",
+  "assertions": [
+    "All 4 non-scheduled agent-mode session records are present in the target bucket",
+    "The Claude Code store was left alone (target code bucket still holds only its pre-existing record)",
+    "None of the 8 recurring scheduled-task records were copied into the target bucket",
+    "No migrated record still contains the previous owner's email address",
+    "Both cwd values that pointed into the source bucket now point into the target bucket and resolve to existing directories",
+    "All 4 agent-mode working directories were copied",
+    "The target bucket's own scheduled-tasks.json and rpm/ config were not overwritten"
+  ]
+}

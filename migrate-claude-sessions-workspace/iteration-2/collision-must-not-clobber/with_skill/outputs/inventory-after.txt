@@ -1,0 +1,16 @@
+root: /Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-3-with
+signed in as: jc@mindoralabs.io (account b06f4a71…, org MindoraLabs)
+
+store                     account    org         sess  sched  dirs  span                     owner
+--------------------------------------------------------------------------------------------------
+claude-code-sessions      aaaaaaaa   bbbbbbbb      12      0     0  2026-07-26 .. 2026-08-06 previous.owner@example.com
+claude-code-sessions      cccccccc   dddddddd      13      0     0  2026-07-26 .. 2026-08-25 jc@mindoralabs.io
+claude-code-sessions      eeeeeeee   bbbbbbbb       5      0     1  2026-08-07 .. 2026-08-11 other.person@example.com
+local-agent-mode-sessions aaaaaaaa   bbbbbbbb      12      8    12  2026-08-05 .. 2026-08-24 previous.owner@example.com
+local-agent-mode-sessions cccccccc   dddddddd       4      0     4  2026-08-05 .. 2026-08-20 jc@mindoralabs.io
+
+* = currently signed-in account (the usual migration target)
+
+!  The signed-in account (jc@mindoralabs.io) owns no bucket in this tree. That is expected for a backup or a copy from another machine — but the running app reads /Users/chenhouren/Library/Application Support/Claude, so migrating here will not change what the user sees. Finish by copying the target bucket into the live tree, re-checking its UUIDs with `inventory` rather than assuming they match.
+
+!  Working on /Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-3-with, not the default app support directory.

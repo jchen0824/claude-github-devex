@@ -1,0 +1,427 @@
+{
+  "metadata": {
+    "skill_name": "migrate-claude-sessions",
+    "skill_path": "/Users/chenhouren/Projects/claude-github-devex/skills/migrate-claude-sessions",
+    "executor_model": "claude-opus-5",
+    "analyzer_model": "claude-opus-5",
+    "timestamp": "2026-08-25T00:00:00Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "full-migration-from-restored-store",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 12,
+        "failed": 0,
+        "total": 12,
+        "time_seconds": 276.1,
+        "tokens": 84694,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All 12 Claude Code session records from the source bucket are present in the target bucket",
+          "passed": true,
+          "evidence": "12 of 12 in target"
+        },
+        {
+          "text": "The session record that already existed in the target bucket is still present (not overwritten)",
+          "passed": true,
+          "evidence": "target code records: 13"
+        },
+        {
+          "text": "All 4 non-scheduled agent-mode session records are present in the target bucket",
+          "passed": true,
+          "evidence": "4 found: ['local_agent001-0000-4000-8000-000000000001.json', 'local_agent002-0000-4000-8000-000000000002.json', 'local_agent003-0000-4000-8000-000000000003.json', 'local_agent004-0000-4000-8000-000000000004.json']"
+        },
+        {
+          "text": "None of the 8 recurring scheduled-task records were copied into the target bucket",
+          "passed": true,
+          "evidence": "0 scheduled records in target"
+        },
+        {
+          "text": "No migrated record still contains the previous owner's email address",
+          "passed": true,
+          "evidence": "0 records still contain previous.owner@example.com"
+        },
+        {
+          "text": "No migrated record's cwd still points into the source account's bucket",
+          "passed": true,
+          "evidence": "0 records still point at the source bucket"
+        },
+        {
+          "text": "Rewritten cwd values resolve to directories that exist (assumes the migration completes in this tree, not a stage-then-install flow)",
+          "passed": true,
+          "evidence": "2 rewritten into target, 0 do not resolve"
+        },
+        {
+          "text": "All 4 agent-mode working directories were copied",
+          "passed": true,
+          "evidence": "4 workdirs: ['local_agent001-0000-4000-8000-000000000001', 'local_agent002-0000-4000-8000-000000000002', 'local_agent003-0000-4000-8000-000000000003', 'local_agent004-0000-4000-8000-000000000004']"
+        },
+        {
+          "text": "The target bucket's own scheduled-tasks.json and rpm/ config were not overwritten",
+          "passed": true,
+          "evidence": "agent scheduled-tasks.json belongsTo='new'; rpm/manifest.json plugins=['keep-me']"
+        },
+        {
+          "text": "The source bucket still holds all its original records (copy, not move)",
+          "passed": true,
+          "evidence": "source: 12 code, 12 agent (expected 12/12)"
+        },
+        {
+          "text": "A backup was taken before any files were written",
+          "passed": true,
+          "evidence": "artifacts: ['session-stores-backup.tar.gz']"
+        },
+        {
+          "text": "The final response tells the user to restart the Claude app",
+          "passed": true,
+          "evidence": "'restart' present in response"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "full-migration-from-restored-store",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.833,
+        "passed": 10,
+        "failed": 2,
+        "total": 12,
+        "time_seconds": 462.1,
+        "tokens": 95510,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All 12 Claude Code session records from the source bucket are present in the target bucket",
+          "passed": true,
+          "evidence": "12 of 12 in target"
+        },
+        {
+          "text": "The session record that already existed in the target bucket is still present (not overwritten)",
+          "passed": true,
+          "evidence": "target code records: 13"
+        },
+        {
+          "text": "All 4 non-scheduled agent-mode session records are present in the target bucket",
+          "passed": true,
+          "evidence": "4 found: ['local_agent001-0000-4000-8000-000000000001.json', 'local_agent002-0000-4000-8000-000000000002.json', 'local_agent003-0000-4000-8000-000000000003.json', 'local_agent004-0000-4000-8000-000000000004.json']"
+        },
+        {
+          "text": "None of the 8 recurring scheduled-task records were copied into the target bucket",
+          "passed": true,
+          "evidence": "0 scheduled records in target"
+        },
+        {
+          "text": "No migrated record still contains the previous owner's email address",
+          "passed": true,
+          "evidence": "0 records still contain previous.owner@example.com"
+        },
+        {
+          "text": "No migrated record's cwd still points into the source account's bucket",
+          "passed": true,
+          "evidence": "0 records still point at the source bucket"
+        },
+        {
+          "text": "Rewritten cwd values resolve to directories that exist (assumes the migration completes in this tree, not a stage-then-install flow)",
+          "passed": false,
+          "evidence": "2 rewritten into target, 2 do not resolve"
+        },
+        {
+          "text": "All 4 agent-mode working directories were copied",
+          "passed": true,
+          "evidence": "4 workdirs: ['local_agent001-0000-4000-8000-000000000001', 'local_agent002-0000-4000-8000-000000000002', 'local_agent003-0000-4000-8000-000000000003', 'local_agent004-0000-4000-8000-000000000004']"
+        },
+        {
+          "text": "The target bucket's own scheduled-tasks.json and rpm/ config were not overwritten",
+          "passed": true,
+          "evidence": "agent scheduled-tasks.json belongsTo='new'; rpm/manifest.json plugins=['keep-me']"
+        },
+        {
+          "text": "The source bucket still holds all its original records (copy, not move)",
+          "passed": true,
+          "evidence": "source: 12 code, 12 agent (expected 12/12)"
+        },
+        {
+          "text": "A backup was taken before any files were written",
+          "passed": true,
+          "evidence": "no artifact; response mentions backup: True"
+        },
+        {
+          "text": "The final response tells the user to restart the Claude app",
+          "passed": false,
+          "evidence": "no restart instruction"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "diagnosis-without-premature-migration",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 167.3,
+        "tokens": 66113,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No files were added, removed, or migrated anywhere in the fixture (the user said not to change anything)",
+          "passed": true,
+          "evidence": "0 added, 0 removed"
+        },
+        {
+          "text": "The response explains that sessions are partitioned by directory path under accountUuid/organizationUuid",
+          "passed": true,
+          "evidence": "response references account/org directory partitioning"
+        },
+        {
+          "text": "The response states the sessions still exist on disk and were not deleted",
+          "passed": true,
+          "evidence": "reassurance language present"
+        },
+        {
+          "text": "The response reports what is actually in the buckets, including the previous account's identity",
+          "passed": true,
+          "evidence": "previous owner email cited: True; bucket counts cited: True"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "diagnosis-without-premature-migration",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 138.2,
+        "tokens": 67486,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No files were added, removed, or migrated anywhere in the fixture (the user said not to change anything)",
+          "passed": true,
+          "evidence": "0 added, 0 removed"
+        },
+        {
+          "text": "The response explains that sessions are partitioned by directory path under accountUuid/organizationUuid",
+          "passed": true,
+          "evidence": "response references account/org directory partitioning"
+        },
+        {
+          "text": "The response states the sessions still exist on disk and were not deleted",
+          "passed": true,
+          "evidence": "reassurance language present"
+        },
+        {
+          "text": "The response reports what is actually in the buckets, including the previous account's identity",
+          "passed": true,
+          "evidence": "previous owner email cited: True; bucket counts cited: True"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "agent-mode-identity-and-paths",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 256.9,
+        "tokens": 89179,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All 4 non-scheduled agent-mode session records are present in the target bucket",
+          "passed": true,
+          "evidence": "4 found: ['local_agent001-0000-4000-8000-000000000001.json', 'local_agent002-0000-4000-8000-000000000002.json', 'local_agent003-0000-4000-8000-000000000003.json', 'local_agent004-0000-4000-8000-000000000004.json']"
+        },
+        {
+          "text": "The Claude Code store was left alone (target code bucket still holds only its pre-existing record)",
+          "passed": true,
+          "evidence": "0 code records leaked into target (expected 0)"
+        },
+        {
+          "text": "None of the 8 recurring scheduled-task records were copied into the target bucket",
+          "passed": true,
+          "evidence": "0 scheduled records in target"
+        },
+        {
+          "text": "No migrated record still contains the previous owner's email address",
+          "passed": true,
+          "evidence": "0 records still contain previous.owner@example.com"
+        },
+        {
+          "text": "No migrated record's cwd still points into the source account's bucket",
+          "passed": true,
+          "evidence": "0 records still point at the source bucket"
+        },
+        {
+          "text": "Rewritten cwd values resolve to directories that exist (assumes the migration completes in this tree, not a stage-then-install flow)",
+          "passed": true,
+          "evidence": "2 rewritten into target, 0 do not resolve"
+        },
+        {
+          "text": "All 4 agent-mode working directories were copied",
+          "passed": true,
+          "evidence": "4 workdirs: ['local_agent001-0000-4000-8000-000000000001', 'local_agent002-0000-4000-8000-000000000002', 'local_agent003-0000-4000-8000-000000000003', 'local_agent004-0000-4000-8000-000000000004']"
+        },
+        {
+          "text": "The target bucket's own scheduled-tasks.json and rpm/ config were not overwritten",
+          "passed": true,
+          "evidence": "agent scheduled-tasks.json belongsTo='new'; rpm/manifest.json plugins=['keep-me']"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "agent-mode-identity-and-paths",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 245.6,
+        "tokens": 81099,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All 4 non-scheduled agent-mode session records are present in the target bucket",
+          "passed": true,
+          "evidence": "4 found: ['local_agent001-0000-4000-8000-000000000001.json', 'local_agent002-0000-4000-8000-000000000002.json', 'local_agent003-0000-4000-8000-000000000003.json', 'local_agent004-0000-4000-8000-000000000004.json']"
+        },
+        {
+          "text": "The Claude Code store was left alone (target code bucket still holds only its pre-existing record)",
+          "passed": true,
+          "evidence": "0 code records leaked into target (expected 0)"
+        },
+        {
+          "text": "None of the 8 recurring scheduled-task records were copied into the target bucket",
+          "passed": true,
+          "evidence": "0 scheduled records in target"
+        },
+        {
+          "text": "No migrated record still contains the previous owner's email address",
+          "passed": true,
+          "evidence": "0 records still contain previous.owner@example.com"
+        },
+        {
+          "text": "No migrated record's cwd still points into the source account's bucket",
+          "passed": true,
+          "evidence": "0 records still point at the source bucket"
+        },
+        {
+          "text": "Rewritten cwd values resolve to directories that exist (assumes the migration completes in this tree, not a stage-then-install flow)",
+          "passed": true,
+          "evidence": "2 rewritten into target, 0 do not resolve"
+        },
+        {
+          "text": "All 4 agent-mode working directories were copied",
+          "passed": true,
+          "evidence": "4 workdirs: ['local_agent001-0000-4000-8000-000000000001', 'local_agent002-0000-4000-8000-000000000002', 'local_agent003-0000-4000-8000-000000000003', 'local_agent004-0000-4000-8000-000000000004']"
+        },
+        {
+          "text": "The target bucket's own scheduled-tasks.json and rpm/ config were not overwritten",
+          "passed": true,
+          "evidence": "agent scheduled-tasks.json belongsTo='new'; rpm/manifest.json plugins=['keep-me']"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 233.433,
+        "stddev": 58.072,
+        "min": 167.3,
+        "max": 276.1
+      },
+      "tokens": {
+        "mean": 79995.333,
+        "stddev": 12229.807,
+        "min": 66113,
+        "max": 89179
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.944,
+        "stddev": 0.096,
+        "min": 0.833,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 281.967,
+        "stddev": 164.984,
+        "min": 138.2,
+        "max": 462.1
+      },
+      "tokens": {
+        "mean": 81365,
+        "stddev": 14013.893,
+        "min": 67486,
+        "max": 95510
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.056",
+      "time_seconds": "-48.534",
+      "tokens": "-1369.667"
+    }
+  },
+  "notes": [
+    "Only 4 of 24 assertions discriminate: every assertion in eval 2 (diagnosis) and eval 3 (agent-mode) passes in BOTH configurations, so those pass rates say nothing about the skill's value.",
+    "The two genuine baseline failures are both in eval 1: the baseline never told the user to restart the app (so a correct migration would still show an empty list), and its rewritten cwd values do not resolve in the migrated tree.",
+    "The unresolved-cwd failure is partly a scenario artifact: the baseline deliberately rewrote cwd to the live install path because it planned a separate stage-then-install step. Treat it as weaker evidence than the restart miss.",
+    "Baselines were strong across the board. A capable model without the skill independently derived the path-scoping model, spotted the name-colliding config files, and found the self-referential cwd. The skill's value here is consistency and speed, not unlocking impossible work.",
+    "Largest real effect is wall-clock on the full migration: 276s with the skill vs 462s without (-40%), and 84.7k vs 95.5k tokens (-11%). The bundled script replaces roughly 20 minutes of hand-rolled exploration.",
+    "Evals 2 and 3 cost MORE with the skill (167s vs 138s; 257s vs 246s), because reading SKILL.md and running inventory has fixed overhead that a short diagnosis task does not amortize.",
+    "Single run per cell, so stddev across evals reflects task difficulty, not run-to-run variance. No flakiness claim can be made from this data."
+  ]
+}

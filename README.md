@@ -1,6 +1,6 @@
 # claude-github-devex
 
-GitHub developer experience tools for Claude Code.
+GitHub developer experience tools for Claude Code, plus local Claude environment utilities.
 
 ## Installation
 
@@ -56,9 +56,31 @@ Automated local code quality loop using the Codex CLI plugin that iterates until
 
 **Requires:** Codex CLI, ralph-loop plugin, and superpowers plugin installed locally.
 
+### `migrate-claude-sessions`
+
+Move local Claude desktop app session history from one account or organization to another on macOS.
+
+**When to use:** After switching from a personal account to a team/work account, joining an org, or consolidating two accounts on the same Mac — any time old sessions "disappear" from the app after signing in with a different account.
+
+**Example invocations:**
+- `"I switched to my work Claude account and all my sessions are gone"`
+- `"Migrate my session history to the team account"`
+- `"Which accounts have Claude session history on this Mac?"`
+
+**What it does:**
+1. Inventories every `<store>/<accountUuid>/<orgUuid>` bucket and identifies who owns each one
+2. Backs up both session stores before writing anything
+3. Copies session records into the target account, excluding config files that collide by name
+4. Rewrites the identity fields agent-mode records embed, and repoints any `cwd` that would otherwise write back into the source account's folder
+5. Verifies counts, JSON validity, and path resolution, then reports what needs a restart
+
+Nothing is server-side — sessions are partitioned by directory path, so this works entirely offline. Transcripts in `~/.claude/projects` are not account-scoped and are deliberately never copied.
+
+**Requires:** macOS and Python 3. No GitHub CLI, no network.
+
 ### Prerequisites
 
-Before using these skills:
+Before using the Codex review skills:
 
 1. **GitHub CLI** — authenticated: `gh auth status`
 2. **In repository root** with PR branch checked out

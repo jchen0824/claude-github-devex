@@ -1,0 +1,5 @@
+UNCHANGED  claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0003-0000-4000-8000-000000000003.json
+UNCHANGED  claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_existing-0000-4000-8000-000000000001.json
+UNCHANGED  claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/scheduled-tasks.json
+UNCHANGED  local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/rpm/manifest.json
+UNCHANGED  local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/scheduled-tasks.json

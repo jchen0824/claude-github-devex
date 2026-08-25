@@ -1,0 +1,8 @@
+  ok    claude-code-sessions: 13 session records in target
+  ok    claude-code-sessions: 12 records still in source
+  ok    local-agent-mode-sessions: 4 session records in target
+  ok    local-agent-mode-sessions: 12 records still in source
+  ok    local-agent-mode-sessions: 4 migrated workdirs keep the previous account in their sandbox .claude.json (per-session state; harmless unless you want it rewritten)
+  ok    transcripts: 0 of 13 found in ~/.claude/projects (13 absent — typically pruned by transcript retention before the migration, since transcripts are shared and were never copied)
+
+verification passed

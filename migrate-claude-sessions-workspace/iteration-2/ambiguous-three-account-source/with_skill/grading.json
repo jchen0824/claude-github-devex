@@ -1,0 +1,43 @@
+{
+  "eval_name": "ambiguous-three-account-source",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "All 12 of the intended source account's Claude Code records reached the target",
+      "passed": true,
+      "evidence": "12 of 12 migrated"
+    },
+    {
+      "text": "Not one record belonging to the other person was copied into the target",
+      "passed": true,
+      "evidence": "0 of the colleague's records leaked into the target"
+    },
+    {
+      "text": "The other person's own bucket was left completely untouched",
+      "passed": true,
+      "evidence": "5 of 5 still in their bucket"
+    },
+    {
+      "text": "The skills-plugin directory was not treated as an account (nothing from it reached the target)",
+      "passed": true,
+      "evidence": "0 skills-plugin artifacts in target"
+    },
+    {
+      "text": "The response identifies the accounts by the email embedded in their records, naming both candidates",
+      "passed": true,
+      "evidence": "source email named: True; colleague email named: True"
+    },
+    {
+      "text": "The response flags that two accounts share the same organization UUID, so the directory path alone cannot separate them",
+      "passed": true,
+      "evidence": "shared-org ambiguity called out"
+    },
+    {
+      "text": "The target's pre-existing records survived",
+      "passed": true,
+      "evidence": "target holds 13 records"
+    }
+  ],
+  "score": "7/7",
+  "pass_rate": 1.0
+}

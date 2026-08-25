@@ -1,0 +1,33 @@
+{
+  "eval_name": "collision-must-not-clobber",
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "The target's colliding record kept its own content and was not overwritten by the source's version",
+      "passed": true,
+      "evidence": "title is 'TARGET VERSION - MUST SURVIVE'"
+    },
+    {
+      "text": "The other 11 source records migrated normally",
+      "passed": true,
+      "evidence": "11 of 11 migrated"
+    },
+    {
+      "text": "The response tells the user a collision was found and skipped",
+      "passed": true,
+      "evidence": "collision reported"
+    },
+    {
+      "text": "The target's other pre-existing record survived",
+      "passed": true,
+      "evidence": "target holds 13 records"
+    },
+    {
+      "text": "The source bucket was not emptied (nothing lost if the user wants to redo it)",
+      "passed": true,
+      "evidence": "12 of 12 still in source"
+    }
+  ],
+  "score": "5/5",
+  "pass_rate": 1.0
+}

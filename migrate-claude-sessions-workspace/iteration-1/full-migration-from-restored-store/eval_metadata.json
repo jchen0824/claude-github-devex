@@ -1,0 +1,18 @@
+{
+  "eval_id": 1,
+  "eval_name": "full-migration-from-restored-store",
+  "prompt": "I moved off my personal Claude account onto my company's team account and every one of my old sessions vanished from the app. I pulled my Claude app data off a Time Machine backup and it's sitting at <workspace>/fixtures/eval-1-<arm>. Can you get my old history showing up under the new account? I really don't want to lose it.",
+  "assertions": [
+    "All 12 Claude Code session records from the source bucket are present in the target bucket",
+    "The session record that already existed in the target bucket is still present (not overwritten)",
+    "All 4 non-scheduled agent-mode session records are present in the target bucket",
+    "None of the 8 recurring scheduled-task records were copied into the target bucket",
+    "All 4 agent-mode working directories were copied, including their outputs/ contents",
+    "No migrated record still contains the previous owner's email address",
+    "Both cwd values that pointed into the source bucket now point into the target bucket and resolve to existing directories",
+    "The target bucket's own scheduled-tasks.json and rpm/ config were not overwritten by the source account's versions",
+    "The source bucket still holds all its original records (copy, not move)",
+    "A backup was taken before any files were written",
+    "The final response tells the user to restart the Claude app"
+  ]
+}

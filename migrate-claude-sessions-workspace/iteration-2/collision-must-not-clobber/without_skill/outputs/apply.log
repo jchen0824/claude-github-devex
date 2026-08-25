@@ -1,0 +1,45 @@
+[BUCKET  ] claude-code-sessions
+[MIGRATE ] local_code0000-0000-4000-8000-000000000000.json: 'Old account session 0'
+[MIGRATE ] local_code0001-0000-4000-8000-000000000001.json: 'Old account session 1'
+[MIGRATE ] local_code0002-0000-4000-8000-000000000002.json: 'Old account session 2'
+[COLLIDE ] local_code0003-0000-4000-8000-000000000003.json: ALREADY EXISTS on the new account -> target version kept, source NOT copied
+[MIGRATE ] local_code0004-0000-4000-8000-000000000004.json: 'Old account session 4'
+[MIGRATE ] local_code0005-0000-4000-8000-000000000005.json: 'Old account session 5'
+[MIGRATE ] local_code0006-0000-4000-8000-000000000006.json: 'Old account session 6'
+[MIGRATE ] local_code0007-0000-4000-8000-000000000007.json: 'Old account session 7'
+[MIGRATE ] local_code0008-0000-4000-8000-000000000008.json: 'Old account session 8'
+[MIGRATE ] local_code0009-0000-4000-8000-000000000009.json: 'Old account session 9'
+[MIGRATE ] local_code0010-0000-4000-8000-000000000010.json: 'Old account session 10'
+[MIGRATE ] local_code0011-0000-4000-8000-000000000011.json: 'Old account session 11'
+[CONFIG  ] scheduled-tasks.json: not a session record -> left alone (target keeps its own copy)
+[BUCKET  ] local-agent-mode-sessions
+[MIGRATE ] local_agent001-0000-4000-8000-000000000001.json: 'Real agent session A'  [dropped stale accountName; dropped stale emailAddress; repointed cwd into new bucket]
+[WORKDIR ] local_agent001-0000-4000-8000-000000000001/: 2 file(s) copied
+[IDENTITY] local_agent001-0000-4000-8000-000000000001/.claude/.claude.json -> new account UUIDs
+[MIGRATE ] local_agent002-0000-4000-8000-000000000002.json: 'Real agent session B'  [dropped stale accountName; dropped stale emailAddress; repointed cwd into new bucket]
+[WORKDIR ] local_agent002-0000-4000-8000-000000000002/: 2 file(s) copied
+[IDENTITY] local_agent002-0000-4000-8000-000000000002/.claude/.claude.json -> new account UUIDs
+[MIGRATE ] local_agent003-0000-4000-8000-000000000003.json: 'Real agent session C'  [dropped stale accountName; dropped stale emailAddress]
+[WORKDIR ] local_agent003-0000-4000-8000-000000000003/: 2 file(s) copied
+[IDENTITY] local_agent003-0000-4000-8000-000000000003/.claude/.claude.json -> new account UUIDs
+[MIGRATE ] local_agent004-0000-4000-8000-000000000004.json: 'Real agent session D'  [dropped stale accountName; dropped stale emailAddress]
+[WORKDIR ] local_agent004-0000-4000-8000-000000000004/: 2 file(s) copied
+[IDENTITY] local_agent004-0000-4000-8000-000000000004/.claude/.claude.json -> new account UUIDs
+[CRON    ] local_sched000-0000-4000-8000-000000000000.json: sessionType=scheduled ('Tidy downloads daily') -> excluded, left in source
+[CRON    ] local_sched001-0000-4000-8000-000000000001.json: sessionType=scheduled ('Tidy downloads daily') -> excluded, left in source
+[CRON    ] local_sched002-0000-4000-8000-000000000002.json: sessionType=scheduled ('Tidy downloads daily') -> excluded, left in source
+[CRON    ] local_sched003-0000-4000-8000-000000000003.json: sessionType=scheduled ('Tidy downloads daily') -> excluded, left in source
+[CRON    ] local_sched004-0000-4000-8000-000000000004.json: sessionType=scheduled ('Tidy downloads daily') -> excluded, left in source
+[CRON    ] local_sched005-0000-4000-8000-000000000005.json: sessionType=scheduled ('Tidy downloads daily') -> excluded, left in source
+[CRON    ] local_sched006-0000-4000-8000-000000000006.json: sessionType=scheduled ('Tidy downloads daily') -> excluded, left in source
+[CRON    ] local_sched007-0000-4000-8000-000000000007.json: sessionType=scheduled ('Tidy downloads daily') -> excluded, left in source
+[CONFIG  ] scheduled-tasks.json: not a session record -> left alone (target keeps its own copy)
+
+MODE: APPLY
+{
+  "migrated": 15,
+  "collisions": 1,
+  "scheduled_skipped": 8,
+  "config_skipped": 2,
+  "wd_files": 8
+}

@@ -1,0 +1,14 @@
+DRY RUN - store root: /Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without
+  from aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa/bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+    to cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd
+
+[claude-code-sessions]
+    copied 12 session record(s) + 0 workspace dir(s)
+    scheduled-tasks.json: old account has 0 tasks -> destination left untouched
+
+[local-agent-mode-sessions]
+    copied 12 session record(s) + 12 workspace dir(s)
+    scheduled-tasks.json: old account has 0 tasks -> destination left untouched
+    rpm/manifest.json: nothing to add -> untouched (keeps ['keep-me'])
+
+TOTAL: 36 item(s) migrated, 0 left alone.

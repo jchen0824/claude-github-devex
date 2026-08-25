@@ -1,0 +1,221 @@
+{
+  "store": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without",
+  "dest_root": "/Users/chenhouren/Library/Application Support/Claude",
+  "source_bucket": "aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa/bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb",
+  "destination_bucket": "cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd",
+  "detected_identity": {},
+  "include_scheduled": false,
+  "applied": true,
+  "migrated": [
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0000-0000-4000-8000-000000000000",
+      "title": "Old account session 0",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0000-0000-4000-8000-000000000000.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0001-0000-4000-8000-000000000001",
+      "title": "Old account session 1",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0001-0000-4000-8000-000000000001.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0002-0000-4000-8000-000000000002",
+      "title": "Old account session 2",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0002-0000-4000-8000-000000000002.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0003-0000-4000-8000-000000000003",
+      "title": "Old account session 3",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0003-0000-4000-8000-000000000003.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0004-0000-4000-8000-000000000004",
+      "title": "Old account session 4",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0004-0000-4000-8000-000000000004.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0005-0000-4000-8000-000000000005",
+      "title": "Old account session 5",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0005-0000-4000-8000-000000000005.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0006-0000-4000-8000-000000000006",
+      "title": "Old account session 6",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0006-0000-4000-8000-000000000006.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0007-0000-4000-8000-000000000007",
+      "title": "Old account session 7",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0007-0000-4000-8000-000000000007.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0008-0000-4000-8000-000000000008",
+      "title": "Old account session 8",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0008-0000-4000-8000-000000000008.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0009-0000-4000-8000-000000000009",
+      "title": "Old account session 9",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0009-0000-4000-8000-000000000009.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0010-0000-4000-8000-000000000010",
+      "title": "Old account session 10",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0010-0000-4000-8000-000000000010.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "claude-code-sessions",
+      "sessionId": "local_code0011-0000-4000-8000-000000000011",
+      "title": "Old account session 11",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_code0011-0000-4000-8000-000000000011.json",
+      "rewrote": [],
+      "workdir": null
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "sessionId": "local_agent001-0000-4000-8000-000000000001",
+      "title": "Real agent session A",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_agent001-0000-4000-8000-000000000001.json",
+      "rewrote": [
+        "-emailAddress",
+        "-accountName",
+        "cwd"
+      ],
+      "workdir": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_agent001-0000-4000-8000-000000000001"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "sessionId": "local_agent002-0000-4000-8000-000000000002",
+      "title": "Real agent session B",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_agent002-0000-4000-8000-000000000002.json",
+      "rewrote": [
+        "-emailAddress",
+        "-accountName",
+        "cwd"
+      ],
+      "workdir": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_agent002-0000-4000-8000-000000000002"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "sessionId": "local_agent003-0000-4000-8000-000000000003",
+      "title": "Real agent session C",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_agent003-0000-4000-8000-000000000003.json",
+      "rewrote": [
+        "-emailAddress",
+        "-accountName"
+      ],
+      "workdir": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_agent003-0000-4000-8000-000000000003"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "sessionId": "local_agent004-0000-4000-8000-000000000004",
+      "title": "Real agent session D",
+      "record": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_agent004-0000-4000-8000-000000000004.json",
+      "rewrote": [
+        "-emailAddress",
+        "-accountName"
+      ],
+      "workdir": "/Users/chenhouren/Projects/claude-github-devex/migrate-claude-sessions-workspace/fixtures/eval-1-without/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd/local_agent004-0000-4000-8000-000000000004"
+    }
+  ],
+  "skipped": [
+    {
+      "family": "claude-code-sessions",
+      "file": "scheduled-tasks.json",
+      "reason": "bucket config, not a session record"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "file": "local_sched000-0000-4000-8000-000000000000.json",
+      "sessionId": "local_sched000-0000-4000-8000-000000000000",
+      "title": "Tidy downloads daily",
+      "reason": "recurring scheduled-run artifact"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "file": "local_sched001-0000-4000-8000-000000000001.json",
+      "sessionId": "local_sched001-0000-4000-8000-000000000001",
+      "title": "Tidy downloads daily",
+      "reason": "recurring scheduled-run artifact"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "file": "local_sched002-0000-4000-8000-000000000002.json",
+      "sessionId": "local_sched002-0000-4000-8000-000000000002",
+      "title": "Tidy downloads daily",
+      "reason": "recurring scheduled-run artifact"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "file": "local_sched003-0000-4000-8000-000000000003.json",
+      "sessionId": "local_sched003-0000-4000-8000-000000000003",
+      "title": "Tidy downloads daily",
+      "reason": "recurring scheduled-run artifact"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "file": "local_sched004-0000-4000-8000-000000000004.json",
+      "sessionId": "local_sched004-0000-4000-8000-000000000004",
+      "title": "Tidy downloads daily",
+      "reason": "recurring scheduled-run artifact"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "file": "local_sched005-0000-4000-8000-000000000005.json",
+      "sessionId": "local_sched005-0000-4000-8000-000000000005",
+      "title": "Tidy downloads daily",
+      "reason": "recurring scheduled-run artifact"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "file": "local_sched006-0000-4000-8000-000000000006.json",
+      "sessionId": "local_sched006-0000-4000-8000-000000000006",
+      "title": "Tidy downloads daily",
+      "reason": "recurring scheduled-run artifact"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "file": "local_sched007-0000-4000-8000-000000000007.json",
+      "sessionId": "local_sched007-0000-4000-8000-000000000007",
+      "title": "Tidy downloads daily",
+      "reason": "recurring scheduled-run artifact"
+    },
+    {
+      "family": "local-agent-mode-sessions",
+      "file": "scheduled-tasks.json",
+      "reason": "bucket config, not a session record"
+    }
+  ]
+}
