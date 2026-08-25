@@ -212,13 +212,16 @@ def cmd_inventory(args) -> int:
         print(f"No Claude app support directory at {root}", file=sys.stderr)
         return 1
 
-    buckets = scan(root)
-    if not args.all:
-        buckets = [b for b in buckets if b["sessions"]]
+    all_buckets = scan(root)
+    # The live-tree check has to see every bucket. A freshly switched-to account
+    # often owns a bucket holding only config and zero sessions; filtering that
+    # out first makes the check report "owns no bucket here", which is exactly
+    # the signal users are told to read as a restored or non-live tree.
+    warnings = live_tree_check(root, all_buckets)
+    buckets = all_buckets if args.all else [b for b in all_buckets if b["sessions"]]
     if args.json:
         print(json.dumps({"root": str(root), "current_account": current_account(),
-                          "buckets": buckets,
-                          "warnings": live_tree_check(root, buckets)}, indent=2))
+                          "buckets": buckets, "warnings": warnings}, indent=2))
         return 0
 
     account = current_account()
@@ -243,7 +246,7 @@ def cmd_inventory(args) -> int:
               f"{b['sessions']:>5} {b['scheduled']:>6} {b['workdirs']:>5}  {span:<24} {owner}{marker}")
     if account:
         print("\n* = currently signed-in account (the usual migration target)")
-    for note in live_tree_check(root, buckets):
+    for note in warnings:
         print(f"\n!  {note}")
     return 0
 
