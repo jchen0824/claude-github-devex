@@ -1,0 +1,38 @@
+{
+  "skill_name": "migrate-claude-sessions",
+  "notes": "Runs against synthetic stores from migrate-claude-sessions-workspace/make_fixture.py, so no real Claude installation is touched. The base fixture carries the traps found during a real migration; the --hard variant adds the ones a naive approach falls into: a second account sharing the source's org UUID, a non-UUID directory sitting among the account dirs, and a record name present in both source and target with different content. Iteration 1 taught us that 22 of 24 assertions passed in both arms; evals 2-4 exist to actually be failable.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "full-migration-from-restored-store",
+      "fixture": "base",
+      "prompt": "I moved off my personal Claude account onto my company's team account and every one of my old sessions vanished from the app. I pulled my Claude app data off a Time Machine backup and it's sitting at FIXTURE_ROOT. Can you get my old history showing up under the new account? I really don't want to lose it.",
+      "expected_output": "Inventories the buckets, backs up, copies (not moves) 12 Claude Code records and 4 real agent-mode sessions with their working directories, leaves the 8 recurring scheduled runs, rewrites identity, repoints in-bucket cwd values, preserves the target's own config, verifies, and ends by telling the user to restart the app.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-three-account-source",
+      "fixture": "hard",
+      "prompt": "there's a few different claude accounts that have been used on this mac over the years. i want the history from my old personal account moved onto my work account. the catch is a colleague borrowed this machine for a stretch and their stuff is on here too - do not touch anything of theirs. store is at FIXTURE_ROOT",
+      "expected_output": "Distinguishes the three accounts by the identity embedded in their records rather than by directory name, notes that two of them share the same org UUID so the path alone cannot separate them, surfaces both candidate emails to the user, migrates only previous.owner@example.com's 12 records, and copies nothing belonging to other.person@example.com. Does not treat the skills-plugin directory as an account.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "collision-must-not-clobber",
+      "fixture": "hard",
+      "prompt": "Please move my Claude Code sessions from the old account bucket over to the new one - store's at FIXTURE_ROOT, old account is previous.owner@example.com. One thing: I've already done a bit of work on the new account, so whatever is already there needs to survive. Don't overwrite anything.",
+      "expected_output": "Detects that local_code0003-0000-4000-8000-000000000003.json exists in both source and target with different content, skips it rather than overwriting, and reports the skip to the user. The target's version keeps its title 'TARGET VERSION - MUST SURVIVE'. The other 11 source records migrate normally, and the target's other pre-existing record is untouched.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "live-tree-mismatch",
+      "fixture": "base",
+      "prompt": "my sessions all disappeared after i signed into claude with my work email. can you move the old ones across so they show up again? the claude data folder is FIXTURE_ROOT",
+      "expected_output": "Notices that the signed-in account from ~/.claude.json owns no bucket in the given tree, meaning this is a copy rather than the directory the running app reads. Tells the user that migrating here will not make sessions reappear and that the result has to land in ~/Library/Application Support/Claude, with the live bucket UUIDs re-checked there. Does not promise that a restart alone will fix it.",
+      "files": []
+    }
+  ]
+}
