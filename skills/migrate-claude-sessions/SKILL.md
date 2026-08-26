@@ -58,7 +58,7 @@ Show the user the inventory table and settle three questions. They matter enough
 
 - **Which source account?** There are often more than two buckets — old personal accounts, a previous employer, a shared machine. Emails may belong to *different people*, which the user needs to see before you merge anyone's history into their work account.
 - **Include recurring scheduled runs?** A single daily scheduled task can generate a hundred near-identical session records that bury the real ones. The script excludes them by default (`--include-scheduled` to keep them).
-- **Copy or move?** Default to copy. The old account is no longer signed in, so leaving its records costs nothing but keeps the migration trivially reversible.
+- **Copy or move?** Default to copy. The old account is no longer signed in, so leaving its records costs nothing but keeps the migration trivially reversible. If you do move, pass `--manifest <path>`: a move empties the source, so without a record of what was migrated there is nothing left to verify the target against.
 
 ### 3. Back up
 
@@ -127,7 +127,7 @@ So the last thing you say is the restart, not a summary. Two details go with it:
 |---|---|
 | `inventory` | Enumerate buckets with counts, date spans, owners. `--json` for machine-readable, `--all` to include empties. |
 | `backup` | Tar both stores. `--dest` to choose the path. |
-| `migrate` | Copy or move sessions. `--dry-run`, `--include-scheduled`, `--move`, `--stores`, `--target-email`, `--target-name`, `--final-root`. |
-| `verify` | Post-migration checks. Exits non-zero if anything failed. `--include-scheduled` and `--final-root` should match the flags you passed to `migrate`, since both change what a correct result looks like. |
+| `migrate` | Copy or move sessions. `--dry-run`, `--include-scheduled`, `--move`, `--stores`, `--target-email`, `--target-name`, `--final-root`, `--manifest`. |
+| `verify` | Post-migration checks. Exits non-zero if anything failed. `--include-scheduled`, `--final-root`, and `--manifest` should match the flags you passed to `migrate`, since each one changes what a correct result looks like. |
 
-Bucket arguments accept `account/org`, or a bare `account` when that account has exactly one org.
+Bucket arguments accept `account/org`, or a bare `account` when that account has exactly one org. A bare target resolves its org once across both stores, so the two can't disagree and strand agent-mode records under an org the account doesn't use.

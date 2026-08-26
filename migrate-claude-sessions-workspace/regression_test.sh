@@ -64,12 +64,72 @@ err=$(CLAUDE_APP_SUPPORT_DIR="$T/bad" python3 "$SC" verify --source "$S" --targe
 chk "corrupt record: no traceback" "$(echo "$err"|grep -c Traceback)" "0"
 
 # 7. live-tree check must not false-alarm on a config-only bucket (#3849102442)
+#    Uses a synthetic HOME so the case runs identically on hosts with no
+#    ~/.claude.json, and fails loudly rather than passing for the wrong reason.
 python3 "$MK" "$T/lt" >/dev/null
-ME=$(python3 -c "import json,pathlib;print((json.load(open(pathlib.Path.home()/'.claude.json'))['oauthAccount']['accountUuid']))")
-MYORG=$(python3 -c "import json,pathlib;print((json.load(open(pathlib.Path.home()/'.claude.json'))['oauthAccount']['organizationUuid']))")
-mkdir -p "$T/lt/claude-code-sessions/$ME/$MYORG"; echo '{}' > "$T/lt/claude-code-sessions/$ME/$MYORG/scheduled-tasks.json"
-n=$(CLAUDE_APP_SUPPORT_DIR="$T/lt" python3 "$SC" inventory 2>/dev/null | grep -c "owns no bucket")
-chk "config-only bucket: no false live-tree warning" "$n" "0"
+FAKE_HOME="$T/fake-home"; mkdir -p "$FAKE_HOME"
+ME=11111111-2222-4333-8444-555555555555; MYORG=66666666-7777-4888-8999-aaaaaaaaaaaa
+cat > "$FAKE_HOME/.claude.json" <<JSON
+{"oauthAccount":{"accountUuid":"$ME","organizationUuid":"$MYORG","emailAddress":"me@example.com","displayName":null,"organizationName":"Example"}}
+JSON
+[ -f "$FAKE_HOME/.claude.json" ] || { echo "  FAIL  could not stage synthetic HOME"; exit 1; }
+mkdir -p "$T/lt/claude-code-sessions/$ME/$MYORG"
+echo '{}' > "$T/lt/claude-code-sessions/$ME/$MYORG/scheduled-tasks.json"
+inv=$(HOME="$FAKE_HOME" CLAUDE_APP_SUPPORT_DIR="$T/lt" python3 "$SC" inventory 2>&1)
+chk "config-only bucket: signed-in account was actually read" "$(echo "$inv"|grep -c 'Could not read the signed-in account')" "0"
+chk "config-only bucket: no false live-tree warning" "$(echo "$inv"|grep -c 'owns no bucket')" "0"
+
+# 8. bare target must not borrow the source's org for a store it is absent from (#3854664624)
+python3 "$MK" "$T/org" >/dev/null
+ORGB=99999999-8888-4777-8666-555555555555
+mkdir -p "$T/org/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/$ORGB"
+rm -rf "$T/org/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd"
+rm -rf "$T/org/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc"
+CLAUDE_APP_SUPPORT_DIR="$T/org" python3 "$SC" migrate \
+  --source aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa --target cccccccc-3333-4333-8333-cccccccccccc >/dev/null 2>&1
+chk "bare target: agent-mode lands under the target's own org" \
+  "$([ -d "$T/org/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/$ORGB" ] && echo yes || echo no)" "yes"
+chk "bare target: not under the source's org" \
+  "$([ -d "$T/org/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb" ] && echo yes || echo no)" "no"
+
+# 9. verify must fail when a bare target resolves to no bucket at all (#3854664630)
+python3 "$MK" "$T/nodst" >/dev/null
+rm -rf "$T/nodst/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc" \
+       "$T/nodst/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc"
+CLAUDE_APP_SUPPORT_DIR="$T/nodst" python3 "$SC" verify \
+  --source "$S" --target cccccccc-3333-4333-8333-cccccccccccc >/dev/null 2>&1
+chk "unresolved target: verify exits nonzero" "$([ $? -ne 0 ] && echo yes || echo no)" "yes"
+
+# 10. after --move the source is gone, so completeness must not be assumed (#3854664637)
+python3 "$MK" "$T/mvv" >/dev/null
+CLAUDE_APP_SUPPORT_DIR="$T/mvv" python3 "$SC" migrate --source "$S" --target "$D" \
+  --stores claude-code-sessions --move >/dev/null 2>&1
+rm -f "$T/mvv/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd"/local_code*.json
+CLAUDE_APP_SUPPORT_DIR="$T/mvv" python3 "$SC" verify --source "$S" --target "$D" \
+  --stores claude-code-sessions >/dev/null 2>&1
+chk "post-move empty target: verify exits nonzero" "$([ $? -ne 0 ] && echo yes || echo no)" "yes"
+
+# 11. a record whose workdir collides must not be installed at all (#3854664652)
+python3 "$MK" "$T/wd" >/dev/null
+WDT="$T/wd/local-agent-mode-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd"
+mkdir -p "$WDT/local_agent001-0000-4000-8000-000000000001/outputs"
+echo "unrelated" > "$WDT/local_agent001-0000-4000-8000-000000000001/outputs/other.txt"
+CLAUDE_APP_SUPPORT_DIR="$T/wd" python3 "$SC" migrate --source "$S" --target "$D" \
+  --stores local-agent-mode-sessions >/dev/null 2>&1
+chk "workdir collision: record not installed" \
+  "$([ -f "$WDT/local_agent001-0000-4000-8000-000000000001.json" ] && echo yes || echo no)" "no"
+
+# 12. a manifest makes a --move verifiable again, and still catches a loss
+python3 "$MK" "$T/man" >/dev/null
+CLAUDE_APP_SUPPORT_DIR="$T/man" python3 "$SC" migrate --source "$S" --target "$D" \
+  --stores claude-code-sessions --move --manifest "$T/man/m.json" >/dev/null 2>&1
+CLAUDE_APP_SUPPORT_DIR="$T/man" python3 "$SC" verify --source "$S" --target "$D" \
+  --stores claude-code-sessions --manifest "$T/man/m.json" >/dev/null 2>&1
+chk "post-move with manifest: verify exits 0" "$?" "0"
+rm -f "$T/man/claude-code-sessions/cccccccc-3333-4333-8333-cccccccccccc/dddddddd-4444-4444-8444-dddddddddddd"/local_code0005*.json
+CLAUDE_APP_SUPPORT_DIR="$T/man" python3 "$SC" verify --source "$S" --target "$D" \
+  --stores claude-code-sessions --manifest "$T/man/m.json" >/dev/null 2>&1
+chk "manifest still catches a missing record" "$([ $? -ne 0 ] && echo yes || echo no)" "yes"
 
 echo; [ $fail -eq 0 ] && echo "ALL CHECKS PASS" || echo "SOME CHECKS FAILED"
 exit $fail

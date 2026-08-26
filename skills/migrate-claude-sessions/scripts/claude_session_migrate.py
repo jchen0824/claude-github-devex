@@ -278,6 +278,31 @@ def parse_bucket(spec: str, root: Path, store: str) -> Path | None:
     raise SystemExit(f"Could not parse bucket spec '{spec}'")
 
 
+def resolve_target(spec: str, root: Path, fallback_org: str) -> tuple[str, str]:
+    """Pin the target account/org once, for every store.
+
+    With a bare account spec the org has to come from somewhere. Taking it from
+    each store's own source bucket lets the two stores disagree: agent-mode
+    records land under the source's org while the account's real bucket sits
+    under another, leaving them invisible to the account they were migrated to.
+    """
+    parts = [p for p in spec.split("/") if p]
+    if len(parts) == 2:
+        return parts[0], parts[1]
+    if len(parts) != 1:
+        raise SystemExit(f"Could not parse bucket spec '{spec}'")
+    account = parts[0]
+    orgs: set[str] = set()
+    for store in STORES:
+        d = root / store / account
+        if d.is_dir():
+            orgs |= {p.name for p in d.iterdir() if is_uuid_dir(p)}
+    if len(orgs) > 1:
+        raise SystemExit(
+            f"'{spec}' matches {len(orgs)} orgs across the stores; specify account/org explicitly.")
+    return account, (orgs.pop() if orgs else fallback_org)
+
+
 def resolve_plan(args, root: Path) -> list[tuple[str, Path, Path]]:
     """Work out every (store, source, target) up front.
 
@@ -286,21 +311,18 @@ def resolve_plan(args, root: Path) -> list[tuple[str, Path, Path]]:
     --move, after its source records are gone. Failing during planning keeps a
     bad spec from turning into a half-finished destructive migration.
     """
-    plan = []
+    sources = []
     for store in STORES:
         if args.stores and store not in args.stores:
             continue
         src = parse_bucket(args.source, root, store)
-        dst = parse_bucket(args.target, root, store)
         if src is None or not src.is_dir():
             continue
-        if dst is None:
-            # Target has no bucket in this store yet; derive it from the source's
-            # own org when the spec was a bare account.
-            parts = [p for p in args.target.split("/") if p]
-            dst = root / store / parts[0] / (parts[1] if len(parts) == 2 else src.name)
-        plan.append((store, src, dst))
-    return plan
+        sources.append((store, src))
+    if not sources:
+        return []
+    acct, org = resolve_target(args.target, root, fallback_org=sources[0][1].name)
+    return [(store, src, root / store / acct / org) for store, src in sources]
 
 
 def make_backup(root: Path, dest: Path) -> Path:
@@ -349,6 +371,12 @@ def cmd_migrate(args) -> int:
 
     for note in live_tree_check(root, scan(root)):
         print(f"!  {note}\n", file=sys.stderr)
+    if args.manifest and not args.dry_run:
+        # After --move the source is empty, so verify has nothing left to compare
+        # against. Recording what this run migrated keeps completeness checkable.
+        manifest = {r["store"]: r["record_names"] for r in results}
+        Path(args.manifest).expanduser().write_text(json.dumps(manifest, indent=2))
+        print(f"manifest written to {args.manifest}", file=sys.stderr)
     if args.dry_run:
         print("\nDry run — no files were written.")
     print(json.dumps({"dry_run": args.dry_run, "results": results}, indent=2))
@@ -393,6 +421,17 @@ def migrate_bucket(src: Path, dst: Path, store: str, args,
             skipped_existing += 1
             continue
 
+        # Check the working directory before writing anything. Installing the
+        # record first and only then discovering the collision leaves a target
+        # session pointing at a pre-existing, possibly unrelated directory —
+        # and verify accepts it, because that path does exist.
+        wd = workdir_for(record)
+        if wd.is_dir() and (dst / wd.name).exists():
+            dir_collisions += 1
+            print(f"  workdir already exists for {record.name}; left the record and the "
+                  f"source directory in place", file=sys.stderr)
+            continue
+
         changed = dict(data)
         # Agent-mode records embed the account that created them. Left as-is,
         # migrated sessions display the previous owner.
@@ -418,24 +457,12 @@ def migrate_bucket(src: Path, dst: Path, store: str, args,
                 os.utime(out, (st.st_atime, st.st_mtime))
         copied += 1
 
-        # Agent-mode sessions own a sibling working directory. If the destination
-        # already has one (an interrupted earlier run, say) we must not copy over
-        # it — and we must not let --move delete the source either, because the
-        # source is then the only complete copy and the target session would be
-        # left pointing at unrelated state.
-        wd = workdir_for(record)
+        # Agent-mode sessions own a sibling working directory.
         if wd.is_dir():
-            if (dst / wd.name).exists():
-                dir_collisions += 1
-                print(f"  workdir already exists for {record.name}; left the source in place",
-                      file=sys.stderr)
-            else:
-                if not args.dry_run:
-                    shutil.copytree(wd, dst / wd.name, symlinks=True)
-                dirs_copied += 1
-                copied_names.append(record.name)
-        else:
-            copied_names.append(record.name)
+            if not args.dry_run:
+                shutil.copytree(wd, dst / wd.name, symlinks=True)
+            dirs_copied += 1
+        copied_names.append(record.name)
 
     if args.move and not args.dry_run:
         # Delete only what this run actually copied. A record skipped because the
@@ -458,6 +485,7 @@ def migrate_bucket(src: Path, dst: Path, store: str, args,
         "workdir_collisions": dir_collisions,
         "mode": "move" if args.move else "copy",
         "final_root": root_to if rewrite_root else None,
+        "record_names": sorted(copied_names),
     }
 
 
@@ -470,21 +498,42 @@ def cmd_verify(args) -> int:
     problems, checks = [], []
 
     final_root = Path(args.final_root).expanduser() if getattr(args, "final_root", None) else None
+    manifest = {}
+    if getattr(args, "manifest", None):
+        manifest = read_json(Path(args.manifest).expanduser()) or {}
+        if not manifest:
+            problems.append(f"could not read a manifest from {args.manifest}")
 
+    checked_any = False
     for store in STORES:
         if args.stores and store not in args.stores:
             continue
         src = parse_bucket(args.source, root, store)
-        dst = parse_bucket(args.target, root, store)
-        if src is None or dst is None or not src.is_dir():
+        if src is None or not src.is_dir():
             continue
+        # Resolve the target the same way migrate does, so a bare account spec
+        # cannot silently resolve to nothing and skip the store entirely.
+        acct, org = resolve_target(args.target, root, fallback_org=src.name)
+        dst = root / store / acct / org
+        checked_any = True
 
         # A target that does not exist, or exists but is missing records, is the
         # case verification most needs to catch: it is what a silently failed copy
         # looks like. Comparing names against the source is the only way to know.
-        expected = [r.name for r in session_records(src)
-                    if (read_json(r) or {}).get("sessionType") != "scheduled"
-                    or args.include_scheduled]
+        source_records = session_records(src)
+        if store in manifest:
+            expected = list(manifest[store])
+        else:
+            expected = [r.name for r in source_records
+                        if (read_json(r) or {}).get("sessionType") != "scheduled"
+                        or args.include_scheduled]
+            if not source_records:
+                # Everything was moved out, so the source can no longer say what
+                # should be here. Reporting "0 of 0 present" would pass a target
+                # that lost the only remaining copy.
+                problems.append(
+                    f"{store}: the source bucket is empty, so completeness cannot be established "
+                    f"— re-run migrate with --manifest and pass it to verify")
         present = {r.name for r in session_records(dst)} if dst.is_dir() else set()
         absent = [n for n in expected if n not in present]
         if absent:
@@ -492,6 +541,7 @@ def cmd_verify(args) -> int:
                 f"{store}: {len(absent)} of {len(expected)} expected records are missing from the "
                 f"target (e.g. {absent[0]}) — the migration did not complete")
         if not dst.is_dir():
+            problems.append(f"{store}: target bucket {acct[:8]}…/{org[:8]}… does not exist")
             continue
 
         records = session_records(dst)
@@ -554,10 +604,11 @@ def cmd_verify(args) -> int:
     # Transcripts are not account-scoped, so they are shared rather than migrated.
     projects = Path.home() / ".claude" / "projects"
     if projects.is_dir() and not args.stores:
-        dst = parse_bucket(args.target, root, "claude-code-sessions")
+        src0 = parse_bucket(args.source, root, "claude-code-sessions")
+        acct, org = resolve_target(args.target, root,
+                                   fallback_org=src0.name if src0 else "")
+        dst = root / "claude-code-sessions" / acct / org
         have = miss = 0
-        if dst is None:
-            dst = root / "claude-code-sessions"
         for r in session_records(dst):
             cli = (read_json(r) or {}).get("cliSessionId")
             if not cli:
@@ -573,6 +624,9 @@ def cmd_verify(args) -> int:
                 f"since transcripts are shared and were never copied)"
             )
 
+    if not checked_any:
+        problems.append(
+            "no source bucket resolved in any store — nothing was verified; check --source/--target")
     for line in checks:
         print(f"  ok    {line}")
     for line in problems:
@@ -608,6 +662,8 @@ def main() -> int:
     p.add_argument("--final-root", help="where this tree will ultimately live (e.g. the real app "
                                         "support dir). Stored paths are rewritten to it, so a "
                                         "staged or restored store still works once it lands.")
+    p.add_argument("--manifest", help="write the migrated record names here. Required to verify a "
+                                      "--move run, which leaves nothing in the source to compare against.")
     p.set_defaults(func=cmd_migrate)
 
     p = sub.add_parser("verify", help="re-check a completed migration")
@@ -618,6 +674,8 @@ def main() -> int:
                    help="expect scheduled-task records in the target too (match the migrate flag)")
     p.add_argument("--final-root", help="the root the migration targeted, if the tree is staged "
                                         "elsewhere — stored paths are validated against it")
+    p.add_argument("--manifest", help="the manifest written by the migrate run; required to verify "
+                                      "a --move, whose source no longer holds the expected records")
     p.set_defaults(func=cmd_verify)
 
     p = sub.add_parser("backup", help="tar both session stores before migrating")
